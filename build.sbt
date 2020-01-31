@@ -1,8 +1,49 @@
-val Http4sVersion   = "0.21.0-M5"
-val CirceVersion    = "0.12.3"
-val DoobieVersion   = "0.8.6"
-val ZIOVersion      = "1.0.0-RC16"
-val SilencerVersion = "1.4.4"
+val http4sVersion   = "0.21.0-RC2"
+val circeVersion    = "0.13.0"
+val doobieVersion   = "0.8.8"
+val zioVersion      = "1.0.0-RC17"
+val silencerVersion = "1.4.4"
+val acyclicVersion  = "0.2.0"
+
+val wartremoverCompileExclusions = Seq(
+  Wart.Overloading,
+  Wart.PublicInference,
+  Wart.Equals,
+  Wart.ImplicitParameter,
+  Wart.Serializable,
+  Wart.JavaSerializable,
+  Wart.DefaultArguments,
+  Wart.Var,
+  Wart.Product,
+  Wart.Any,
+  Wart.ExplicitImplicitTypes,
+  Wart.ImplicitConversion,
+  Wart.Nothing,
+  Wart.MutableDataStructures
+)
+
+val wartremoverTestCompileExclusions = wartremoverCompileExclusions ++ Seq(
+  Wart.DefaultArguments,
+  Wart.Var,
+  Wart.AsInstanceOf,
+  Wart.IsInstanceOf,
+  Wart.TraversableOps,
+  Wart.Option2Iterable,
+  Wart.JavaSerializable,
+  Wart.FinalCaseClass,
+  Wart.NonUnitStatements
+)
+
+val filterConsoleScalacOptions = { options: Seq[String] =>
+  options.filterNot(
+    Set(
+      "-Ywarn-unused:imports",
+      "-Ywarn-unused-import",
+      "-Ywarn-dead-code",
+      "-Xfatal-warnings"
+    )
+  )
+}
 
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias(
@@ -37,44 +78,68 @@ lazy val root = (project in file("."))
       "-language:existentials",
       "-Xfatal-warnings",
       "-Xlint:-infer-any,_",
+      "-Xlint:constant",
+      //"-Xlog-implicits",
       "-Ywarn-value-discard",
       "-Ywarn-numeric-widen",
       "-Ywarn-extra-implicit",
-      "-Ywarn-unused:_"
+      "-Ywarn-unused:_",
+      "-Ymacro-annotations"
     ) ++ (if (isSnapshot.value) Seq.empty
           else
             Seq(
               "-opt:l:inline"
-            )),
+            )) ++ Seq(
+      "-P:acyclic:force",
+      //"-P:splain:all", //TODO comment to have the macros "zio.macros.annotation.accessible" working
+      "-P:silencer:checkUnused"
+    ),
+    dependencyCheckCveUrlModified := Some(
+      new URL("http://nvdmirror.sml.io/")
+    ),
+    dependencyCheckCveUrlBase := Some("http://nvdmirror.sml.io/"),
+    dependencyCheckAssemblyAnalyzerEnabled := Some(false),
+    dependencyCheckFormat := "All",
+    wartremoverWarnings in (Compile, compile) := Warts.all
+      .diff(wartremoverCompileExclusions),
+    wartremoverWarnings in (Test, compile) := Warts.all
+      .diff(wartremoverTestCompileExclusions),
+    scalacOptions in (Compile, console) ~= filterConsoleScalacOptions,
+    scalacOptions in (Test, console) ~= filterConsoleScalacOptions,
     libraryDependencies ++= Seq(
-      "org.http4s"            %% "http4s-blaze-server" % Http4sVersion,
-      "org.http4s"            %% "http4s-circe"        % Http4sVersion,
-      "org.http4s"            %% "http4s-dsl"          % Http4sVersion,
-      "io.circe"              %% "circe-core"          % CirceVersion,
-      "io.circe"              %% "circe-generic"       % CirceVersion,
-      "io.circe"              %% "circe-literal"       % CirceVersion % "test",
-      "org.tpolecat"          %% "doobie-core"         % DoobieVersion,
-      "org.tpolecat"          %% "doobie-h2"           % DoobieVersion,
-      "org.tpolecat"          %% "doobie-hikari"       % DoobieVersion,
-      "dev.zio"               %% "zio"                 % ZIOVersion,
-      "dev.zio"               %% "zio-test"            % ZIOVersion % "test",
-      "dev.zio"               %% "zio-test-sbt"        % ZIOVersion % "test",
-      "dev.zio"               %% "zio-interop-cats"    % "2.0.0.0-RC7",
-      "dev.zio"               %% "zio-macros-core"     % "0.5.0",
-      "org.flywaydb"          % "flyway-core"          % "5.2.4",
-      "com.h2database"        % "h2"                   % "1.4.199",
-      "org.slf4j"             % "slf4j-log4j12"        % "1.7.26",
-      "com.github.pureconfig" %% "pureconfig"          % "0.12.1",
-      "com.lihaoyi"           %% "sourcecode"          % "0.1.7",
-      ("com.github.ghik" % "silencer-lib" % SilencerVersion % "provided")
+      "org.http4s"            %% "http4s-blaze-server" % http4sVersion,
+      "org.http4s"            %% "http4s-circe"        % http4sVersion,
+      "org.http4s"            %% "http4s-dsl"          % http4sVersion,
+      "io.circe"              %% "circe-core"          % circeVersion,
+      "io.circe"              %% "circe-generic"       % circeVersion,
+      "io.circe"              %% "circe-optics"        % circeVersion,
+      "io.circe"              %% "circe-literal"       % circeVersion % Test,
+      "org.tpolecat"          %% "doobie-core"         % doobieVersion,
+      "org.tpolecat"          %% "doobie-h2"           % doobieVersion,
+      "org.tpolecat"          %% "doobie-hikari"       % doobieVersion,
+      "org.tpolecat"          %% "doobie-quill"        % doobieVersion,
+      "dev.zio"               %% "zio"                 % zioVersion,
+      "dev.zio"               %% "zio-test"            % zioVersion % Test,
+      "dev.zio"               %% "zio-test-sbt"        % zioVersion % Test,
+      "dev.zio"               %% "zio-interop-cats"    % "2.0.0.0-RC10",
+      "dev.zio"               %% "zio-macros-core"     % "0.6.2",
+      "org.flywaydb"          % "flyway-core"          % "6.2.1",
+      "com.h2database"        % "h2"                   % "1.4.200",
+      "org.slf4j"             % "slf4j-log4j12"        % "1.7.30",
+      "com.github.pureconfig" %% "pureconfig"          % "0.12.2",
+      "com.lihaoyi"           %% "sourcecode"          % "0.2.0",
+      "com.lihaoyi"           %% "acyclic"             % acyclicVersion % "provided",
+      ("com.github.ghik" % "silencer-lib" % silencerVersion % "provided")
         .cross(CrossVersion.full),
       // plugins
+      compilerPlugin("com.lihaoyi" %% "acyclic" % acyclicVersion),
+      // compilerPlugin(("io.tryp" % "splain" % "0.5.0").cross(CrossVersion.patch)), //TODO comment to have the macros "zio.macros.annotation.accessible" working
       compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
       compilerPlugin(
         ("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)
       ),
       compilerPlugin(
-        ("com.github.ghik" % "silencer-plugin" % SilencerVersion)
+        ("com.github.ghik" % "silencer-plugin" % silencerVersion)
           .cross(CrossVersion.full)
       )
     )
@@ -119,3 +184,5 @@ val mergeReleaseVersion = ReleaseStep(action = st => {
   git.cmd("checkout", curBranch) ! st.log
   st
 })
+
+Global / onChangedBuildSource := ReloadOnSourceChanges

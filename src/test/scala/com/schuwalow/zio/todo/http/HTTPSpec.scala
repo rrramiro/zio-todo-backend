@@ -1,6 +1,8 @@
 package com.schuwalow.zio.todo.http
 
-import org.http4s.{ EntityDecoder, Method, Request, Response, Status, Uri }
+import io.circe.Json
+import org.http4s._
+import org.http4s.circe._
 import zio.test.Assertion._
 import zio.test._
 import zio.interop.catz._
@@ -12,28 +14,33 @@ object HTTPSpec {
     method: Method,
     uri: String
   ): Request[F] =
-    Request(method = method, uri = Uri.fromString(uri).toOption.get)
+    Request(method = method, uri = Uri.unsafeFromString(uri))
 
   def checkRequest[R, A](
-    actual: RIO[R, Response[RIO[R, ?]]],
+    actual: RIO[R, Response[RIO[R, *]]],
     expectedStatus: Status,
     expectedBody: Option[A]
   )(implicit
-    ev: EntityDecoder[RIO[R, ?], A]
+    ev: EntityDecoder[RIO[R, *], A]
   ): RIO[R, TestResult] =
     for {
-      actual <- actual
+      response <- actual
       bodyResult <- expectedBody
                      .fold[RIO[R, TestResult]](
-                       assertM(actual.bodyAsText.compile.toVector, isEmpty)
-                     )(
-                       expected => assertM(actual.as[A], equalTo(expected))
-                     )
-      statusResult = assert(actual.status, equalTo(expectedStatus))
+                       assertM(response.bodyAsText.compile.toVector, isEmpty)
+                     )(expected => assertM(response.as[A], equalTo(expected)))
+      statusResult = assert(response.status, equalTo(expectedStatus))
     } yield bodyResult && statusResult
 
+  def checkRequestJson[R, A](
+    actual: RIO[R, Response[RIO[R, *]]],
+    expectedStatus: Status,
+    expectedBody: Json
+  ): RIO[R, TestResult] =
+    checkRequest(actual, expectedStatus, Some(expectedBody))
+
   def checkRequestRaw[R, A](
-    actual: RIO[R, Response[RIO[R, ?]]],
+    actual: RIO[R, Response[RIO[R, *]]],
     expectedStatus: Status,
     expectedBody: String
   ): RIO[R, TestResult] =

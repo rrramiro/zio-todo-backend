@@ -1,101 +1,57 @@
 package com.schuwalow.zio.todo.http
 
-import com.schuwalow.zio.todo._
+import cats.syntax.show._
+import cats.instances.long._
+import com.schuwalow.zio.todo.domain._
+import com.schuwalow.zio.todo.logger._
 import com.schuwalow.zio.todo.repository._
-import io.circe.generic.semiauto._
 import io.circe.{ Decoder, Encoder }
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 import zio.RIO
 import zio.interop.catz._
-import com.github.ghik.silencer.silent
 
-object TodoService {
+class TodoRoutes[R <: Logger with Repository](rootUri: String)
+    extends Http4sDsl[RIO[R, *]] {
 
-  final case class TodoItemWithUri(
-    id: Long,
-    url: String,
-    title: String,
-    completed: Boolean,
-    order: Option[Int])
+  private def todoItemWithUri(todoItem: TodoItem) = TodoItemWithUri(
+    todoItem.id.value,
+    s"$rootUri/${todoItem.id.value.show}",
+    todoItem.item.title,
+    todoItem.item.completed,
+    todoItem.item.order
+  )
 
-  object TodoItemWithUri {
+  implicit def circeJsonDecoder[A: Decoder]: EntityDecoder[RIO[R, *], A] =
+    jsonOf[RIO[R, *], A]
 
-    def apply(
-      basePath: String,
-      todoItem: TodoItem
-    ): TodoItemWithUri =
-      TodoItemWithUri(
-        todoItem.id.value,
-        s"$basePath/${todoItem.id.value}",
-        todoItem.item.title,
-        todoItem.item.completed,
-        todoItem.item.order
-      )
+  implicit def circeJsonEncoder[A: Encoder]: EntityEncoder[RIO[R, *], A] =
+    jsonEncoderOf[RIO[R, *], A]
 
-    implicit val encoder: Encoder[TodoItemWithUri] = deriveEncoder
-    implicit val decoder: Decoder[TodoItemWithUri] = deriveDecoder
-  }
-
-  @silent("unreachable") // https://github.com/scala/bug/issues/11457
-  def routes[R <: TodoRepository](rootUri: String): HttpRoutes[RIO[R, ?]] = {
-    type TodoTask[A] = RIO[R, A]
-
-    val dsl: Http4sDsl[TodoTask] = Http4sDsl[TodoTask]
-    import dsl._
-
-    implicit def circeJsonDecoder[A](
-      implicit
-      decoder: Decoder[A]
-    ): EntityDecoder[TodoTask, A] =
-      jsonOf[TodoTask, A]
-    implicit def circeJsonEncoder[A](
-      implicit
-      encoder: Encoder[A]
-    ): EntityEncoder[TodoTask, A] =
-      jsonEncoderOf[TodoTask, A]
-
-    HttpRoutes.of[TodoTask] {
-
-      case GET -> Root / LongVar(id) =>
-        for {
-          todo <- getById(TodoId(id))
-          response <- todo.fold(NotFound())(
-                       x => Ok(TodoItemWithUri(rootUri, x))
-                     )
-        } yield response
-
-      case GET -> Root =>
-        Ok(getAll.map(_.map(TodoItemWithUri(rootUri, _))))
-
-      case req @ POST -> Root =>
-        req.decode[TodoItemPostForm] { todoItemForm =>
-          create(todoItemForm)
-            .map(TodoItemWithUri(rootUri, _))
-            .flatMap(Created(_))
-        }
-
-      case DELETE -> Root / LongVar(id) =>
-        for {
-          item <- getById(TodoId(id))
-          result <- item
-                     .map(x => delete(x.id))
-                     .fold(NotFound())(_.flatMap(Ok(_)))
-        } yield result
-
-      case DELETE -> Root =>
-        deleteAll *> Ok()
-
-      case req @ PATCH -> Root / LongVar(id) =>
-        req.decode[TodoItemPatchForm] { updateForm =>
-          for {
-            update <- update(TodoId(id), updateForm)
-            response <- update.fold(NotFound())(
-                         x => Ok(TodoItemWithUri(rootUri, x))
-                       )
-          } yield response
-        }
-    }
+  val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
+    case GET -> Root / LongVar(id) =>
+      getById(TodoId(id)) >>= (_.fold(NotFound())(
+        x => Ok(todoItemWithUri(x))
+      ))
+    case GET -> Root =>
+      info("getAll") *>
+        Ok(getAll.map(_.map(todoItemWithUri)))
+    case req @ POST -> Root =>
+      req.decode[TodoItemPostForm] { todoItemForm =>
+        create(todoItemForm)
+          .map(todoItemWithUri)
+          .flatMap(Created(_))
+      }
+    case DELETE -> Root / LongVar(id) =>
+      getById(TodoId(id)) >>= (_.map(x => delete(x.id))
+        .fold(NotFound())(_.flatMap(Ok(_))))
+    case DELETE -> Root => deleteAll *> Ok()
+    case req @ PATCH -> Root / LongVar(id) =>
+      req.decode[TodoItemPatchForm] { updateForm =>
+        update(TodoId(id), updateForm) >>= (_.fold(NotFound())(
+          x => Ok(todoItemWithUri(x))
+        ))
+      }
   }
 }
