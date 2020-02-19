@@ -11,9 +11,10 @@ import io.circe.literal._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
+import org.http4s.server.Router
 import zio._
 import zio.test._
-import zio.interop.catz._
+import zio.interop.catz.taskConcurrentInstance
 import zio.macros.delegate.syntax._
 
 object TodoServiceSpec
@@ -81,8 +82,15 @@ object TodoServiceSpecUtils {
     : EntityDecoder[TodoTask, TodoItemWithUri] =
     jsonOf[TodoTask, TodoItemWithUri]
 
-  val app: HttpApp[TodoTask] =
-    new TodoRoutes[AppEnv]("").routes.orNotFound
+  val todoRoutes    = new TodoRoutes[AppEnv]("")
+  val graphqlRoutes = new GraphQLRoutes[AppEnv]()
+
+  println(graphqlRoutes.api.render)
+
+  val app: HttpApp[TodoTask] = Router[TodoTask](
+    "/"        -> todoRoutes.routes,
+    "/graphql" -> graphqlRoutes.routes
+  ).orNotFound
 
   def withEnv[A](task: TodoTask[A]): RIO[ZEnv, A] =
     ZIO.environment[ZEnv] @@

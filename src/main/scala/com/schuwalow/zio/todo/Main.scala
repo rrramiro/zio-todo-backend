@@ -2,7 +2,7 @@ package com.schuwalow.zio.todo
 
 import cats.effect._
 import com.schuwalow.zio.todo.config._
-import com.schuwalow.zio.todo.http.TodoRoutes
+import com.schuwalow.zio.todo.http.{ GraphQLRoutes, TodoRoutes }
 import com.schuwalow.zio.todo.logger._
 import com.schuwalow.zio.todo.repository._
 import fs2.Stream.Compiler._
@@ -49,7 +49,8 @@ object Main extends ManagedApp {
         Router[RIO[R, *]](
           "/todos" -> new TodoRoutes(
             s"${cfg.appConfig.baseUrl}/todos"
-          ).routes
+          ).routes,
+          "/api/graphql" -> new GraphQLRoutes[R].routes
         ).orNotFound
       })
       .serve

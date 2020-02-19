@@ -38,21 +38,26 @@ object InMemoryTodoRepository {
     override def deleteAll: URIO[R, Unit] =
       ref.update(_.empty).unit
 
-    override def create(todoItemForm: TodoItemPostForm): URIO[R, TodoItem] =
+    override def create(
+      title: String,
+      order: Option[Int]
+    ): URIO[R, TodoItem] =
       for {
         newId <- counter.update(_ + 1).map(TodoId)
-        todo  = todoItemForm.asTodoItem(newId)
+        todo  = TodoItem.createItem(title, order, newId)
         _     <- ref.update(store => store + (newId -> todo))
       } yield todo
 
     override def update(
       id: TodoId,
-      todoItemForm: TodoItemPatchForm
+      title: Option[String],
+      completed: Option[Boolean],
+      order: Option[Int]
     ): URIO[R, Option[TodoItem]] =
       for {
         oldValue <- getById(id)
         result <- oldValue.fold[UIO[Option[TodoItem]]](ZIO.succeed(None)) { x =>
-                   val newValue = x.update(todoItemForm)
+                   val newValue = x.update(title, completed, order)
                    ref.update(store => store + (newValue.id -> newValue)) *>
                      ZIO.succeed(Some(newValue))
                  }

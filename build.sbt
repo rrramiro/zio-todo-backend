@@ -4,6 +4,7 @@ val doobieVersion   = "0.8.8"
 val zioVersion      = "1.0.0-RC17"
 val silencerVersion = "1.4.4"
 val acyclicVersion  = "0.2.0"
+val calibanVersion  = "0.5.2"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -114,6 +115,8 @@ lazy val root = (project in file("."))
       "io.circe"              %% "circe-generic"       % circeVersion,
       "io.circe"              %% "circe-optics"        % circeVersion,
       "io.circe"              %% "circe-literal"       % circeVersion % Test,
+      "com.github.ghostdogpr" %% "caliban"             % calibanVersion,
+      "com.github.ghostdogpr" %% "caliban-http4s"      % calibanVersion,
       "org.tpolecat"          %% "doobie-core"         % doobieVersion,
       "org.tpolecat"          %% "doobie-h2"           % doobieVersion,
       "org.tpolecat"          %% "doobie-hikari"       % doobieVersion,

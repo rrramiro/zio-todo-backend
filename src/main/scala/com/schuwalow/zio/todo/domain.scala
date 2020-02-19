@@ -18,13 +18,27 @@ object domain {
     id: TodoId,
     item: TodoPayload) {
 
-    def update(form: TodoItemPatchForm): TodoItem = copy(
+    def update(
+      title: Option[String],
+      completed: Option[Boolean],
+      order: Option[Int]
+    ): TodoItem = copy(
       item = item.copy(
-        title = form.title.getOrElse(item.title),
-        completed = form.completed.getOrElse(item.completed),
-        order = form.order.orElse(item.order)
+        title = title.getOrElse(item.title),
+        completed = completed.getOrElse(item.completed),
+        order = order.orElse(item.order)
       )
     )
+  }
+
+  object TodoItem {
+
+    def createItem(
+      title: String,
+      order: Option[Int] = None,
+      id: TodoId = TodoId(-1)
+    ): TodoItem =
+      TodoItem(id, TodoPayload(title, false, order))
   }
 
   final case class TodoItemWithUri(
@@ -41,13 +55,7 @@ object domain {
 
   final case class TodoItemPostForm(
     title: String,
-    order: Option[Int] = None) {
-
-    def asTodoItem(id: TodoId = TodoId(-1)): TodoItem =
-      TodoItem(id, this.asTodoPayload)
-
-    def asTodoPayload: TodoPayload = TodoPayload(title, false, order)
-  }
+    order: Option[Int] = None)
 
   object TodoItemPostForm {
     implicit val decoder: Decoder[TodoItemPostForm] = deriveDecoder
@@ -61,5 +69,16 @@ object domain {
   object TodoItemPatchForm {
     implicit val decoder: Decoder[TodoItemPatchForm] = deriveDecoder
   }
+
+  final case class TodoItemCreateArgs(
+    title: String,
+    order: Option[Int] = None)
+
+  final case class TodoItemUpdateArgs(
+    id: TodoId,
+    title: Option[String] = None,
+    completed: Option[Boolean] = None,
+    order: Option[Int] = None)
+  final case class TodoItemArgs(id: TodoId)
 
 }

@@ -2,6 +2,7 @@ package com.schuwalow.zio.todo.repository
 
 import com.schuwalow.zio.todo.domain._
 import zio._
+//import zio.stream.ZStream
 
 //@zio.macros.annotation.accessible
 trait Repository {
@@ -15,12 +16,20 @@ object Repository {
     def getById(id: TodoId): URIO[R, Option[TodoItem]]
     def delete(id: TodoId): URIO[R, Unit]
     def deleteAll: URIO[R, Unit]
-    def create(todoItemForm: TodoItemPostForm): URIO[R, TodoItem]
+
+    def create(
+      title: String,
+      order: Option[Int]
+    ): URIO[R, TodoItem]
 
     def update(
       id: TodoId,
-      todoItemForm: TodoItemPatchForm
+      title: Option[String],
+      completed: Option[Boolean],
+      order: Option[Int]
     ): ZIO[R, Nothing, Option[TodoItem]]
+
+    //def deletedEvents: ZStream[R, Nothing, String] = ZStream.empty
   }
 
 }

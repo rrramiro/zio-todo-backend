@@ -39,7 +39,7 @@ class TodoRoutes[R <: Logger with Repository](rootUri: String)
         Ok(getAll.map(_.map(todoItemWithUri)))
     case req @ POST -> Root =>
       req.decode[TodoItemPostForm] { todoItemForm =>
-        create(todoItemForm)
+        create(todoItemForm.title, todoItemForm.order)
           .map(todoItemWithUri)
           .flatMap(Created(_))
       }
@@ -49,7 +49,12 @@ class TodoRoutes[R <: Logger with Repository](rootUri: String)
     case DELETE -> Root => deleteAll *> Ok()
     case req @ PATCH -> Root / LongVar(id) =>
       req.decode[TodoItemPatchForm] { updateForm =>
-        update(TodoId(id), updateForm) >>= (_.fold(NotFound())(
+        update(
+          TodoId(id),
+          updateForm.title,
+          updateForm.completed,
+          updateForm.order
+        ) >>= (_.fold(NotFound())(
           x => Ok(todoItemWithUri(x))
         ))
       }

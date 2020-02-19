@@ -115,20 +115,25 @@ object DoobieTodoRepository {
         .unit
         .orDie
 
-    def create(todoItemForm: TodoItemPostForm): URIO[R, TodoItem] =
+    def create(
+      title: String,
+      order: Option[Int]
+    ): URIO[R, TodoItem] =
       SqlContext
-        .create(todoItemForm.asTodoItem())
-        .map(id => todoItemForm.asTodoItem(TodoId(id)))
+        .create(TodoItem.createItem(title))
+        .map(id => TodoItem.createItem(title, id = TodoId(id)))
         .transact(xa)
         .orDie
 
     def update(
       id: TodoId,
-      todoItemForm: TodoItemPatchForm
+      title: Option[String],
+      completed: Option[Boolean],
+      order: Option[Int]
     ): URIO[R, Option[TodoItem]] =
       (for {
         oldItem <- SqlContext.get(id)
-        newItem = oldItem.map(_.update(todoItemForm))
+        newItem = oldItem.map(_.update(title, completed, order))
         _       <- newItem.fold(connection.unit)(item => SqlContext.update(item).void)
       } yield newItem)
         .transact(xa)
