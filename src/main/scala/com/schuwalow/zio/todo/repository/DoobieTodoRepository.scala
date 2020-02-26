@@ -2,6 +2,7 @@ package com.schuwalow.zio.todo.repository
 
 import com.schuwalow.zio.todo.domain._
 import com.schuwalow.zio.todo.config._
+import com.schuwalow.zio.todo.stream._
 import cats.effect.Blocker
 import cats.implicits._
 import io.getquill.{ idiom => _, _ }
@@ -16,6 +17,7 @@ import zio._
 import zio.macros.delegate._
 import zio.blocking.Blocking
 import zio.interop.catz._
+import zio.stream.ZStream
 
 final class DoobieTodoRepository(xa: Transactor[Task]) extends Repository {
 
@@ -81,7 +83,12 @@ object DoobieTodoRepository {
       todosTable.delete
     })
 
-    def update(todoItem: TodoItem): doobie.ConnectionIO[Long] =
+    val getAllStreamed: fs2.Stream[ConnectionIO, TodoItem] =
+      stream[TodoItem](quote {
+        todosTable
+      })
+
+    def update(todoItem: TodoItem): ConnectionIO[Long] =
       run(quote {
         todosTable
           .filter(_.id == lift(todoItem.id))
@@ -91,31 +98,36 @@ object DoobieTodoRepository {
 
   class Service[R](xa: Transactor[Task]) extends Repository.Service[R] {
 
-    def getAll: URIO[R, List[TodoItem]] =
+    override def getAll: URIO[R, List[TodoItem]] =
       SqlContext.getAll
         .transact(xa)
         .orDie
 
-    def getById(id: TodoId): URIO[R, Option[TodoItem]] =
+    override def getById(id: TodoId): URIO[R, Option[TodoItem]] =
       SqlContext
         .get(id)
         .transact(xa)
         .orDie
 
-    def delete(id: TodoId): URIO[R, Unit] =
+    override def delete(id: TodoId): URIO[R, Unit] =
       SqlContext
         .delete(id)
         .transact(xa)
         .unit
         .orDie
 
-    def deleteAll: URIO[R, Unit] =
+    override def deleteAll: URIO[R, Unit] =
       SqlContext.deleteAll
         .transact(xa)
         .unit
         .orDie
 
-    def create(
+    override def getAllStreamed: ZStream[R, Nothing, TodoItem] =
+      SqlContext.getAllStreamed
+        .transact(xa)
+        .toZStream
+
+    override def create(
       title: String,
       order: Option[Int]
     ): URIO[R, TodoItem] =
@@ -125,7 +137,7 @@ object DoobieTodoRepository {
         .transact(xa)
         .orDie
 
-    def update(
+    override def update(
       id: TodoId,
       title: Option[String],
       completed: Option[Boolean],

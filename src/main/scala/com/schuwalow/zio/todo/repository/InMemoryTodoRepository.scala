@@ -3,6 +3,7 @@ package com.schuwalow.zio.todo.repository
 import com.schuwalow.zio.todo.domain._
 import zio._
 import zio.macros.delegate._
+import zio.stream.ZStream
 
 final class InMemoryTodoRepository(
   ref: Ref[Map[TodoId, TodoItem]],
@@ -62,6 +63,8 @@ object InMemoryTodoRepository {
                      ZIO.succeed(Some(newValue))
                  }
       } yield result
+
+    override def getAllStreamed: ZStream[R, Nothing, TodoItem] = ZStream.empty
   }
 
 }

@@ -2,6 +2,7 @@ package com.schuwalow.zio.todo
 
 import com.schuwalow.zio.todo.domain._
 import zio._
+import zio.stream.ZStream
 //import zio.stream.ZStream
 
 package object repository extends Repository.Service[Repository] { // TodoRepository.Accessors
@@ -32,6 +33,7 @@ package object repository extends Repository.Service[Repository] { // TodoReposi
   ): URIO[Repository, Option[TodoItem]] =
     ZIO.accessM(_.todoRepository.update(id, title, completed, order))
 
-  //override def deletedEvents: ZStream[Repository, Nothing, String] = ZStream.accessM(_.todoRepository.deletedEvents)
+  override def getAllStreamed: ZStream[Repository, Nothing, TodoItem] =
+    ZStream.accessM(_.todoRepository.getAllStreamed)
 
 }

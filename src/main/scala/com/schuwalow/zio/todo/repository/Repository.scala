@@ -2,7 +2,7 @@ package com.schuwalow.zio.todo.repository
 
 import com.schuwalow.zio.todo.domain._
 import zio._
-//import zio.stream.ZStream
+import zio.stream.ZStream
 
 //@zio.macros.annotation.accessible
 trait Repository {
@@ -29,7 +29,7 @@ object Repository {
       order: Option[Int]
     ): ZIO[R, Nothing, Option[TodoItem]]
 
-    //def deletedEvents: ZStream[R, Nothing, String] = ZStream.empty
+    def getAllStreamed: ZStream[R, Nothing, TodoItem]
   }
 
 }
