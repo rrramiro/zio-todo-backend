@@ -1,8 +1,10 @@
 package com.schuwalow.zio.todo
 
+import caliban.Http4sAdapter
 import cats.effect._
 import com.schuwalow.zio.todo.config._
-import com.schuwalow.zio.todo.http.{ GraphQLRoutes, TodoRoutes }
+import com.schuwalow.zio.todo.graphql.GraphQLAPI
+import com.schuwalow.zio.todo.http.TodoRoutes
 import com.schuwalow.zio.todo.logger._
 import com.schuwalow.zio.todo.repository._
 import fs2.Stream.Compiler._
@@ -25,12 +27,10 @@ object Main extends ManagedApp {
               .fromEither(ConfigSource.default.load[Config])
               .mapError(ConfigReaderException(_))
               .toManaged_
-
       _ <- ZIO.environment[ZEnv] @@
             Slf4jLogger.withSlf4jLogger("zio-todo-backend") @@
             DoobieTodoRepository.withDoobieTodoRepository(cfg.dbConfig) >>>
             runHttp(cfg).toManaged_
-
     } yield ())
       .foldM(
         err =>
@@ -43,19 +43,21 @@ object Main extends ManagedApp {
   def runHttp[R <: ZEnv with Logger with Repository](
     cfg: Config
   ): RIO[R, Unit] = ZIO.runtime[R] >>= { implicit rts =>
-    BlazeServerBuilder[RIO[R, *]]
-      .bindHttp(cfg.appConfig.port, "0.0.0.0")
-      .withHttpApp(CORS {
-        Router[RIO[R, *]](
-          "/todos" -> new TodoRoutes(
-            s"${cfg.appConfig.baseUrl}/todos"
-          ).routes,
-          "/api/graphql" -> new GraphQLRoutes[R].routes
-        ).orNotFound
-      })
-      .serve
-      .compile[RIO[R, *], RIO[R, *], ExitCode]
-      .drain
+    new GraphQLAPI[R].api.interpreter >>= { interpreter =>
+      BlazeServerBuilder[RIO[R, *]]
+        .bindHttp(cfg.appConfig.port, "0.0.0.0")
+        .withHttpApp(CORS {
+          Router[RIO[R, *]](
+            "/todos" -> new TodoRoutes(
+              s"${cfg.appConfig.baseUrl}/todos"
+            ).routes,
+            "/api/graphql" -> Http4sAdapter.makeHttpService(interpreter)
+          ).orNotFound
+        })
+        .serve
+        .compile[RIO[R, *], RIO[R, *], ExitCode]
+        .drain
+    }
   }
 
 }

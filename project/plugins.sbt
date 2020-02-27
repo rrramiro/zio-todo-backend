@@ -21,3 +21,5 @@ addSbtPlugin("com.dwijnand" % "sbt-reloadquick" % "1.0.0")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.0")
 
 addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "1.3.3")
+
+addSbtPlugin("com.github.ghostdogpr" % "caliban-codegen" % "0.6.0")

@@ -82,14 +82,10 @@ object TodoServiceSpecUtils {
     : EntityDecoder[TodoTask, TodoItemWithUri] =
     jsonOf[TodoTask, TodoItemWithUri]
 
-  val todoRoutes    = new TodoRoutes[AppEnv]("")
-  val graphqlRoutes = new GraphQLRoutes[AppEnv]()
-
-  println(graphqlRoutes.api.render)
+  val todoRoutes = new TodoRoutes[AppEnv]("")
 
   val app: HttpApp[TodoTask] = Router[TodoTask](
-    "/"        -> todoRoutes.routes,
-    "/graphql" -> graphqlRoutes.routes
+    "/" -> todoRoutes.routes
   ).orNotFound
 
   def withEnv[A](task: TodoTask[A]): RIO[ZEnv, A] =

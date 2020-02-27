@@ -22,23 +22,23 @@ package object stream {
           for {
             queue <- Queue.bounded[Take[Throwable, A]](1).toManaged(_.shutdown)
             _ <- ZIO
-              .runtime[R]
-              .toManaged_
-              .flatMap { implicit runtime =>
-                (stream.evalTap(a => queue.offer(Take.Value(a))) ++ fs2.Stream
-                  .eval(queue.offer(Take.End)))
-                  .handleErrorWith(
-                    e =>
-                      fs2.Stream
-                        .eval(queue.offer(Take.Fail(Cause.fail(e))))
-                        .drain
-                  )
-                  .compile
-                  .resource
-                  .drain
-                  .toManaged
-              }
-              .fork
+                  .runtime[R]
+                  .toManaged_
+                  .flatMap { implicit runtime =>
+                    (stream.evalTap(a => queue.offer(Take.Value(a))) ++ fs2.Stream
+                      .eval(queue.offer(Take.End)))
+                      .handleErrorWith(
+                        e =>
+                          fs2.Stream
+                            .eval(queue.offer(Take.Fail(Cause.fail(e))))
+                            .drain
+                      )
+                      .compile
+                      .resource
+                      .drain
+                      .toManaged
+                  }
+                  .fork
           } yield ZStream.fromQueue(queue).unTake
         }
       }.flatMap(_.catchAll(_ => ZStream.empty))

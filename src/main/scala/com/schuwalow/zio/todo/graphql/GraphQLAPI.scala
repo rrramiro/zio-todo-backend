@@ -1,13 +1,13 @@
-package com.schuwalow.zio.todo.http
+package com.schuwalow.zio.todo.graphql
 
-import caliban._
 import caliban.GraphQL.graphQL
+import caliban.{ GraphQL, RootResolver }
 import caliban.Value.IntValue
 import caliban.introspection.adt._
-import caliban.schema._
 import caliban.schema.Annotations._
-import caliban.wrappers.Wrappers._
+import caliban.schema._
 import caliban.wrappers.ApolloTracing.apolloTracing
+import caliban.wrappers.Wrappers._
 import com.schuwalow.zio.todo.domain._
 import com.schuwalow.zio.todo.repository._
 import zio._
@@ -16,7 +16,7 @@ import zio.duration._
 
 import scala.language.postfixOps
 
-class GraphQLRoutes[R <: Repository with console.Console with clock.Clock]
+class GraphQLAPI[R <: Repository with console.Console with clock.Clock]
     extends GenericSchema[R] {
 
   implicit val todoIdSchema: Schema[Any, TodoId] = new Schema[Any, TodoId] {
@@ -61,5 +61,4 @@ class GraphQLRoutes[R <: Repository with console.Console with clock.Clock]
       printSlowQueries(500 millis) @@ // wrapper that logs slow queries
       apolloTracing                   // wrapper for https://github.com/apollographql/apollo-tracing
 
-  val routes = Http4sAdapter.makeHttpService(api.interpreter)
 }

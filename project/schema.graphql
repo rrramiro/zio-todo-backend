@@ -1,0 +1,30 @@
+schema {
+  query: Queries
+  mutation: Mutations
+}
+
+scalar Long
+scalar Unit
+
+type Mutations {
+  createTodoItem(title: String!, order: Int): TodoItem!
+  deleteTodoItem(id: Long!): Unit!
+  deleteAllTodoItems: Unit!
+  updateTodoItem(id: Long!, title: String, completed: Boolean, order: Int): TodoItem
+}
+
+type Queries {
+  allTodoItems: [TodoItem!]!
+  todoItem(id: Long!): TodoItem
+}
+
+type TodoItem {
+  id: Long!
+  item: TodoPayload!
+}
+
+type TodoPayload {
+  title: String!
+  completed: Boolean!
+  order: Int
+}

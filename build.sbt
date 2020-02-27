@@ -4,7 +4,8 @@ val doobieVersion   = "0.8.8"
 val zioVersion      = "1.0.0-RC17"
 val silencerVersion = "1.4.4"
 val acyclicVersion  = "0.2.0"
-val calibanVersion  = "0.5.2"
+val calibanVersion  = "0.6.0"
+val sttpVersion     = "2.0.0"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -51,9 +52,13 @@ addCommandAlias(
   "check",
   "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck"
 )
+addCommandAlias(
+  "gengraphql",
+  "calibanGenClient project/schema.graphql src/main/scala/com/schuwalow/zio/todo/graphql/Client.scala"
+)
 
 lazy val root = (project in file("."))
-  .enablePlugins(JavaAppPackaging, DockerPlugin)
+  .enablePlugins(JavaAppPackaging, DockerPlugin, CodegenPlugin)
   .settings(
     packageName in Docker := "zio-todo",
     dockerUsername in Docker := Some("mnt"),
@@ -108,32 +113,35 @@ lazy val root = (project in file("."))
     scalacOptions in (Compile, console) ~= filterConsoleScalacOptions,
     scalacOptions in (Test, console) ~= filterConsoleScalacOptions,
     libraryDependencies ++= Seq(
-      "org.http4s"            %% "http4s-blaze-server"         % http4sVersion,
-      "org.http4s"            %% "http4s-circe"                % http4sVersion,
-      "org.http4s"            %% "http4s-dsl"                  % http4sVersion,
-      "io.circe"              %% "circe-core"                  % circeVersion,
-      "io.circe"              %% "circe-generic"               % circeVersion,
-      "io.circe"              %% "circe-optics"                % circeVersion,
-      "io.circe"              %% "circe-literal"               % circeVersion % Test,
-      "com.github.ghostdogpr" %% "caliban"                     % calibanVersion,
-      "com.github.ghostdogpr" %% "caliban-http4s"              % calibanVersion,
-      "org.tpolecat"          %% "doobie-core"                 % doobieVersion,
-      "org.tpolecat"          %% "doobie-h2"                   % doobieVersion,
-      "org.tpolecat"          %% "doobie-hikari"               % doobieVersion,
-      "org.tpolecat"          %% "doobie-quill"                % doobieVersion,
-      "dev.zio"               %% "zio"                         % zioVersion,
-      "dev.zio"               %% "zio-test"                    % zioVersion % Test,
-      "dev.zio"               %% "zio-test-sbt"                % zioVersion % Test,
-      "dev.zio"               %% "zio-interop-cats"            % "2.0.0.0-RC10",
-      "dev.zio"               %% "zio-interop-reactivestreams" % "1.0.3.5-RC3",
-      "co.fs2"                %% "fs2-reactive-streams"        % "2.2.2",
-      "dev.zio"               %% "zio-macros-core"             % "0.6.2",
-      "org.flywaydb"          % "flyway-core"                  % "6.2.1",
-      "com.h2database"        % "h2"                           % "1.4.200",
-      "org.slf4j"             % "slf4j-log4j12"                % "1.7.30",
-      "com.github.pureconfig" %% "pureconfig"                  % "0.12.2",
-      "com.lihaoyi"           %% "sourcecode"                  % "0.2.0",
-      "com.lihaoyi"           %% "acyclic"                     % acyclicVersion % "provided",
+      "org.http4s"                   %% "http4s-blaze-server"         % http4sVersion,
+      "org.http4s"                   %% "http4s-circe"                % http4sVersion,
+      "org.http4s"                   %% "http4s-dsl"                  % http4sVersion,
+      "io.circe"                     %% "circe-core"                  % circeVersion,
+      "io.circe"                     %% "circe-generic"               % circeVersion,
+      "io.circe"                     %% "circe-optics"                % circeVersion,
+      "io.circe"                     %% "circe-literal"               % circeVersion % Test,
+      "com.github.ghostdogpr"        %% "caliban"                     % calibanVersion,
+      "com.github.ghostdogpr"        %% "caliban-http4s"              % calibanVersion,
+      "com.github.ghostdogpr"        %% "caliban-client"              % calibanVersion,
+      "org.tpolecat"                 %% "doobie-core"                 % doobieVersion,
+      "org.tpolecat"                 %% "doobie-h2"                   % doobieVersion,
+      "org.tpolecat"                 %% "doobie-hikari"               % doobieVersion,
+      "org.tpolecat"                 %% "doobie-quill"                % doobieVersion,
+      "com.softwaremill.sttp.client" %% "core"                        % sttpVersion,
+      "com.softwaremill.sttp.client" %% "http4s-backend"              % sttpVersion % Test,
+      "dev.zio"                      %% "zio"                         % zioVersion,
+      "dev.zio"                      %% "zio-test"                    % zioVersion % Test,
+      "dev.zio"                      %% "zio-test-sbt"                % zioVersion % Test,
+      "dev.zio"                      %% "zio-interop-cats"            % "2.0.0.0-RC10",
+      "dev.zio"                      %% "zio-interop-reactivestreams" % "1.0.3.5-RC3",
+      "co.fs2"                       %% "fs2-reactive-streams"        % "2.2.2",
+      "dev.zio"                      %% "zio-macros-core"             % "0.6.2",
+      "org.flywaydb"                 % "flyway-core"                  % "6.2.1",
+      "com.h2database"               % "h2"                           % "1.4.200",
+      "org.slf4j"                    % "slf4j-log4j12"                % "1.7.30",
+      "com.github.pureconfig"        %% "pureconfig"                  % "0.12.2",
+      "com.lihaoyi"                  %% "sourcecode"                  % "0.2.0",
+      "com.lihaoyi"                  %% "acyclic"                     % acyclicVersion % "provided",
       ("com.github.ghik" % "silencer-lib" % silencerVersion % "provided")
         .cross(CrossVersion.full),
       // plugins
