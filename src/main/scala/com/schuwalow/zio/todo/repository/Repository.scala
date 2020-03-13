@@ -4,11 +4,6 @@ import com.schuwalow.zio.todo.domain._
 import zio._
 import zio.stream.ZStream
 
-//@zio.macros.annotation.accessible
-trait Repository {
-  val todoRepository: Repository.Service[Any]
-}
-
 object Repository {
 
   trait Service[R] {

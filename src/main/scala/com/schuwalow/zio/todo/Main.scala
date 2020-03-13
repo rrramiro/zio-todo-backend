@@ -15,7 +15,6 @@ import org.http4s.server.Router
 import zio._
 import zio.console._
 import zio.interop.catz._
-import zio.macros.delegate.syntax._
 import pureconfig.ConfigSource
 import pureconfig.error.ConfigReaderException
 
@@ -27,10 +26,14 @@ object Main extends ManagedApp {
               .fromEither(ConfigSource.default.load[Config])
               .mapError(ConfigReaderException(_))
               .toManaged_
-      _ <- ZIO.environment[ZEnv] @@
-            Slf4jLogger.withSlf4jLogger("zio-todo-backend") @@
-            DoobieTodoRepository.withDoobieTodoRepository(cfg.dbConfig) >>>
-            runHttp(cfg).toManaged_
+      _ <- runHttp(cfg)
+            .provideLayer(
+              ZEnv.live ++
+                Slf4jLogger.withSlf4jLogger("zio-todo-backend") ++
+                DoobieTodoRepository.withDoobieTodoRepository(cfg.dbConfig)
+              //InMemoryTodoRepository.withInMemoryRepository
+            )
+            .toManaged_
     } yield ())
       .foldM(
         err =>

@@ -2,25 +2,17 @@ package com.schuwalow.zio.todo.repository
 
 import com.schuwalow.zio.todo.domain._
 import zio._
-import zio.macros.delegate._
 import zio.stream.ZStream
-
-final class InMemoryTodoRepository(
-  ref: Ref[Map[TodoId, TodoItem]],
-  counter: Ref[Long])
-    extends Repository {
-
-  val todoRepository = new InMemoryTodoRepository.Service[Any](ref, counter)
-}
 
 object InMemoryTodoRepository {
 
-  val withInMemoryRepository = enrichWithM[Repository] {
+  val withInMemoryRepository
+    : ZLayer[Any, Nothing, Has[Repository.Service[Any]]] = {
     for {
       ref     <- Ref.make(Map.empty[TodoId, TodoItem])
       counter <- Ref.make(0L)
-    } yield new InMemoryTodoRepository(ref, counter)
-  }
+    } yield new InMemoryTodoRepository.Service[Any](ref, counter)
+  }.toLayer
 
   class Service[R](
     ref: Ref[Map[TodoId, TodoItem]],
@@ -44,7 +36,8 @@ object InMemoryTodoRepository {
       order: Option[Int]
     ): URIO[R, TodoItem] =
       for {
-        newId <- counter.update(_ + 1).map(TodoId)
+        _     <- counter.update(_ + 1)
+        newId <- counter.get.map(TodoId)
         todo  = TodoItem.createItem(title, order, newId)
         _     <- ref.update(store => store + (newId -> todo))
       } yield todo

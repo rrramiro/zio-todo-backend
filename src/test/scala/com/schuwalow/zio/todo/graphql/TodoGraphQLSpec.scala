@@ -5,9 +5,8 @@ import zio._
 import zio.test._
 import zio.test.Assertion.equalTo
 import zio.interop.catz._
-import zio.macros.delegate.syntax._
-import com.schuwalow.zio.todo.logger.{ Logger, NoLogger }
-import com.schuwalow.zio.todo.repository.{ InMemoryTodoRepository, Repository }
+import com.schuwalow.zio.todo.logger._
+import com.schuwalow.zio.todo.repository._
 import com.schuwalow.zio.todo.graphql.{ Client => GraphQLClient }
 import sttp.client._
 import sttp.client.http4s.Http4sBackend
@@ -18,21 +17,20 @@ import TodoGraphQLSpecUtils._
 import caliban.client.Operations._
 import caliban.client.SelectionBuilder
 
-object TodoGraphQLSpec
-    extends DefaultRunnableSpec(
-      suite("TodoGraphQL")(
-        testM("GQL should list all todo items") {
-          withEnv { implicit backend =>
-            assertM(
-              GraphQLClient.Queries
-                .allTodoItems(GraphQLClient.TodoItem.id)
-                .call,
-              equalTo(List.empty[Long])
-            )
-          }
-        }
-      )
-    )
+object TodoGraphQLSpec extends DefaultRunnableSpec {
+
+  def spec = suite("TodoGraphQL")(
+    testM("GQL should list all todo items") {
+      withEnv { implicit backend =>
+        assertM(
+          GraphQLClient.Queries
+            .allTodoItems(GraphQLClient.TodoItem.id)
+            .call
+        )(equalTo(List.empty[Long]))
+      }
+    }
+  )
+}
 
 object TodoGraphQLSpecUtils {
   type AppEnv      = ZEnv with Logger with Repository
@@ -59,9 +57,12 @@ object TodoGraphQLSpecUtils {
   }
 
   def withEnv[A](task: TodoSttpBackend => TodoTask[A]): RIO[ZEnv, A] =
-    ZIO.environment[ZEnv] @@
-      NoLogger.withNoLogger @@
-      InMemoryTodoRepository.withInMemoryRepository >>> (testingBackend >>= task)
+    (testingBackend >>= task)
+      .provideLayer(
+        ZEnv.live ++
+          NoLogger.withNoLogger ++
+          InMemoryTodoRepository.withInMemoryRepository
+      )
 
   implicit class SelectionBuilderWrapper[Q: IsOperation, A](
     builder: SelectionBuilder[Q, A]

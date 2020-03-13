@@ -1,7 +1,7 @@
 package com.schuwalow.zio.todo
 import zio._
 import zio.stream._
-import zio.interop.reactiveStreams.publisherToStream
+import zio.interop.reactivestreams.publisherToStream
 import fs2.interop.reactivestreams.StreamOps
 import zio.interop.catz._
 

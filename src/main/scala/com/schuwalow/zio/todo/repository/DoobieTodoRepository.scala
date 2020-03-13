@@ -14,44 +14,34 @@ import doobie.quill.DoobieContext
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
 import zio._
-import zio.macros.delegate._
 import zio.blocking.Blocking
 import zio.interop.catz._
 import zio.stream.ZStream
 
-final class DoobieTodoRepository(xa: Transactor[Task]) extends Repository {
-
-  val todoRepository = new DoobieTodoRepository.Service[Any](xa)
-}
-
 object DoobieTodoRepository {
 
-  def withDoobieTodoRepository(cfg: DBConfig) =
-    enrichWithManaged[Repository] {
-      Task {
-        Flyway
-          .configure()
-          .dataSource(cfg.url, cfg.user, cfg.password)
-          .load()
-          .migrate()
-      }.unit.toManaged_ *> ZIO.runtime[Blocking].toManaged_ >>= { implicit rt =>
-        for {
-          transactEC <- rt.environment.blocking.blockingExecutor
-                         .map(_.asEC)
-                         .toManaged_
-          transactor <- HikariTransactor
-                         .newHikariTransactor[Task](
-                           cfg.driver,
-                           cfg.url,
-                           cfg.user,
-                           cfg.password,
-                           rt.platform.executor.asEC,
-                           Blocker.liftExecutionContext(transactEC)
-                         )
-                         .toManaged
-        } yield new DoobieTodoRepository(transactor)
-      }
-    }
+  def withDoobieTodoRepository(
+    cfg: DBConfig
+  ): ZLayer[Blocking, Throwable, Has[Repository.Service[Any]]] = {
+    Task {
+      Flyway
+        .configure()
+        .dataSource(cfg.url, cfg.user, cfg.password)
+        .load()
+        .migrate()
+    }.unit.toManaged_ *> (ZIO.runtime[Blocking].toManaged_ >>= { implicit rt =>
+      HikariTransactor
+        .newHikariTransactor[Task](
+          cfg.driver,
+          cfg.url,
+          cfg.user,
+          cfg.password,
+          rt.platform.executor.asEC,
+          Blocker.liftExecutionContext(rt.environment.get.blockingExecutor.asEC)
+        )
+        .toManaged
+    }).map(transactor => new DoobieTodoRepository.Service[Any](transactor))
+  }.toLayer
 
   object SqlContext extends DoobieContext.H2(UpperCase) {
     implicit val todosInsertMeta = insertMeta[TodoItem](_.id)

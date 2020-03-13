@@ -3,7 +3,8 @@ package com.schuwalow.zio.todo
 import zio._
 import sourcecode._
 
-package object logger extends Logger.Service[Logger] { //Logger.Accessors
+package object logger extends Logger.Service[Has[Logger.Service[Any]]] {
+  type Logger = Has[Logger.Service[Any]]
 
   def trace(
     a: String
@@ -11,7 +12,7 @@ package object logger extends Logger.Service[Logger] { //Logger.Accessors
     line: Line,
     file: File
   ): URIO[Logger, Unit] =
-    ZIO.accessM(_.logger.trace(a))
+    ZIO.accessM(_.get.trace(a))
 
   def debug(
     a: String
@@ -19,7 +20,7 @@ package object logger extends Logger.Service[Logger] { //Logger.Accessors
     line: Line,
     file: File
   ): URIO[Logger, Unit] =
-    ZIO.accessM(_.logger.debug(a))
+    ZIO.accessM(_.get.debug(a))
 
   def info(
     a: String
@@ -27,7 +28,7 @@ package object logger extends Logger.Service[Logger] { //Logger.Accessors
     line: Line,
     file: File
   ): URIO[Logger, Unit] =
-    ZIO.accessM(_.logger.info(a))
+    ZIO.accessM(_.get.info(a))
 
   def warn(
     a: String
@@ -35,7 +36,7 @@ package object logger extends Logger.Service[Logger] { //Logger.Accessors
     line: Line,
     file: File
   ): URIO[Logger, Unit] =
-    ZIO.accessM(_.logger.warn(a))
+    ZIO.accessM(_.get.warn(a))
 
   def error(
     a: String
@@ -43,6 +44,6 @@ package object logger extends Logger.Service[Logger] { //Logger.Accessors
     line: Line,
     file: File
   ): URIO[Logger, Unit] =
-    ZIO.accessM(_.logger.error(a))
+    ZIO.accessM(_.get.error(a))
 
 }

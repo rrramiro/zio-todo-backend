@@ -1,11 +1,11 @@
-val http4sVersion   = "0.21.0-RC2"
+val http4sVersion   = "0.21.1"
 val circeVersion    = "0.13.0"
 val doobieVersion   = "0.8.8"
-val zioVersion      = "1.0.0-RC17"
-val silencerVersion = "1.4.4"
+val zioVersion      = "1.0.0-RC18-2"
+val silencerVersion = "1.6.0"
 val acyclicVersion  = "0.2.0"
-val calibanVersion  = "0.6.0"
-val sttpVersion     = "2.0.0"
+val calibanVersion  = "0.7.0"
+val sttpVersion     = "2.0.5"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -114,7 +114,6 @@ lazy val root = (project in file("."))
     scalacOptions in (Test, console) ~= filterConsoleScalacOptions,
     libraryDependencies ++= Seq(
       "org.http4s"                   %% "http4s-blaze-server"         % http4sVersion,
-      "org.http4s"                   %% "http4s-circe"                % http4sVersion,
       "org.http4s"                   %% "http4s-dsl"                  % http4sVersion,
       "io.circe"                     %% "circe-core"                  % circeVersion,
       "io.circe"                     %% "circe-generic"               % circeVersion,
@@ -132,21 +131,22 @@ lazy val root = (project in file("."))
       "dev.zio"                      %% "zio"                         % zioVersion,
       "dev.zio"                      %% "zio-test"                    % zioVersion % Test,
       "dev.zio"                      %% "zio-test-sbt"                % zioVersion % Test,
-      "dev.zio"                      %% "zio-interop-cats"            % "2.0.0.0-RC10",
-      "dev.zio"                      %% "zio-interop-reactivestreams" % "1.0.3.5-RC3",
+      "dev.zio"                      %% "zio-interop-cats"            % "2.0.0.0-RC12",
+      "dev.zio"                      %% "zio-interop-reactivestreams" % "1.0.3.5-RC6",
       "co.fs2"                       %% "fs2-reactive-streams"        % "2.2.2",
-      "dev.zio"                      %% "zio-macros-core"             % "0.6.2",
-      "org.flywaydb"                 % "flyway-core"                  % "6.2.1",
+      "org.flywaydb"                 % "flyway-core"                  % "6.3.0",
       "com.h2database"               % "h2"                           % "1.4.200",
       "org.slf4j"                    % "slf4j-log4j12"                % "1.7.30",
-      "com.github.pureconfig"        %% "pureconfig"                  % "0.12.2",
-      "com.lihaoyi"                  %% "sourcecode"                  % "0.2.0",
+      "com.github.pureconfig"        %% "pureconfig"                  % "0.12.3",
+      "com.lihaoyi"                  %% "sourcecode"                  % "0.2.1",
       "com.lihaoyi"                  %% "acyclic"                     % acyclicVersion % "provided",
       ("com.github.ghik" % "silencer-lib" % silencerVersion % "provided")
         .cross(CrossVersion.full),
       // plugins
       compilerPlugin("com.lihaoyi" %% "acyclic" % acyclicVersion),
-      // compilerPlugin(("io.tryp" % "splain" % "0.5.0").cross(CrossVersion.patch)), //TODO comment to have the macros "zio.macros.annotation.accessible" working
+      compilerPlugin(
+        ("io.tryp" % "splain" % "0.5.1").cross(CrossVersion.patch)
+      ), //TODO comment to have the macros "zio.macros.annotation.accessible" working
       compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
       compilerPlugin(
         ("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)
