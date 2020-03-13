@@ -4,22 +4,19 @@ import cats.syntax.flatMap._
 import cats.syntax.show._
 import cats.instances.int._
 import zio.interop.catz._
-import zio.{ URIO, ZIO }
-import zio.macros.delegate._
+import zio._
 import org.slf4j.{ LoggerFactory, Logger => SLogger }
 import com.schuwalow.zio.todo.warts._
 import sourcecode._
 
 object Slf4jLogger {
 
-  def withSlf4jLogger(name: String): EnrichWith[Logger] =
-    enrichWith[Logger](new Logger {
-
-      val logger = new Slf4jLogger.Service[Any](
-        LoggerFactory.getLogger(name),
-        _.value.split("/").last
-      )
-    })
+  def withSlf4jLogger(name: String) = ZLayer.succeed[Logger.Service[Any]](
+    new Slf4jLogger.Service[Any](
+      LoggerFactory.getLogger(name),
+      _.value.split("/").last
+    )
+  )
 
   class Service[R](
     inner: SLogger,

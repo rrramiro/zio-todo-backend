@@ -27,9 +27,9 @@ object HTTPSpec {
       response <- actual
       bodyResult <- expectedBody
                      .fold[RIO[R, TestResult]](
-                       assertM(response.bodyAsText.compile.toVector, isEmpty)
-                     )(expected => assertM(response.as[A], equalTo(expected)))
-      statusResult = assert(response.status, equalTo(expectedStatus))
+                       assertM(response.bodyAsText.compile.toVector)(isEmpty)
+                     )(expected => assertM(response.as[A])(equalTo(expected)))
+      statusResult = assert(response.status)(equalTo(expectedStatus))
     } yield bodyResult && statusResult
 
   def checkRequestJson[R, A](

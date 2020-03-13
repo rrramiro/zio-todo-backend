@@ -15,64 +15,63 @@ import org.http4s.server.Router
 import zio._
 import zio.test._
 import zio.interop.catz.taskConcurrentInstance
-import zio.macros.delegate.syntax._
 
-object TodoServiceSpec
-    extends DefaultRunnableSpec(
-      suite("TodoService")(
-        testM("should create new todo items") {
-          withEnv {
-            checkRequestJson(app.run(setupReq), Status.Created, record1)
-          }
-        },
-        testM("should list all todo items") {
-          withEnv {
-            checkRequestJson(
-              app.run(setupReq) *>
-                app.run(setupReq) *>
-                app.run(getReq),
-              Status.Ok,
-              json"""[$record1,$record2]"""
-            )
-          }
-        },
-        testM("should delete todo items by id") {
-          withEnv {
-            checkRequestJson(
-              (app.run(setupReq) >>=
-                (_.as[TodoItemWithUri].map(_.id)) >>=
-                (id => app.run(deleteWithIdReq(id)))) *> app.run(getReq),
-              Status.Ok,
-              json"""[]"""
-            )
-          }
-        },
-        testM("should delete all todo items") {
-          withEnv {
-            checkRequestJson(
-              app.run(setupReq) *>
-                app.run(setupReq) *>
-                app.run(deleteReq) *>
-                app.run(getReq),
-              Status.Ok,
-              json"""[]"""
-            )
-          }
-        },
-        testM("should update todo items") {
-          withEnv {
-            checkRequestJson(
-              (app
-                .run(setupReq) >>=
-                (_.as[TodoItemWithUri].map(_.id)) >>=
-                (id => app.run(updateReq(id)))) *> app.run(getReq),
-              Status.Ok,
-              json"""[$record1Updated]"""
-            )
-          }
-        }
-      )
-    )
+object TodoServiceSpec extends DefaultRunnableSpec {
+
+  def spec = suite("TodoService")(
+    testM("should create new todo items") {
+      withEnv {
+        checkRequestJson(app.run(setupReq), Status.Created, record1)
+      }
+    },
+    testM("should list all todo items") {
+      withEnv {
+        checkRequestJson(
+          app.run(setupReq) *>
+            app.run(setupReq) *>
+            app.run(getReq),
+          Status.Ok,
+          json"""[$record1,$record2]"""
+        )
+      }
+    },
+    testM("should delete todo items by id") {
+      withEnv {
+        checkRequestJson(
+          (app.run(setupReq) >>=
+            (_.as[TodoItemWithUri].map(_.id)) >>=
+            (id => app.run(deleteWithIdReq(id)))) *> app.run(getReq),
+          Status.Ok,
+          json"""[]"""
+        )
+      }
+    },
+    testM("should delete all todo items") {
+      withEnv {
+        checkRequestJson(
+          app.run(setupReq) *>
+            app.run(setupReq) *>
+            app.run(deleteReq) *>
+            app.run(getReq),
+          Status.Ok,
+          json"""[]"""
+        )
+      }
+    },
+    testM("should update todo items") {
+      withEnv {
+        checkRequestJson(
+          (app
+            .run(setupReq) >>=
+            (_.as[TodoItemWithUri].map(_.id)) >>=
+            (id => app.run(updateReq(id)))) *> app.run(getReq),
+          Status.Ok,
+          json"""[$record1Updated]"""
+        )
+      }
+    }
+  )
+}
 
 object TodoServiceSpecUtils {
   type AppEnv      = ZEnv with Logger with Repository
@@ -88,10 +87,11 @@ object TodoServiceSpecUtils {
     "/" -> todoRoutes.routes
   ).orNotFound
 
-  def withEnv[A](task: TodoTask[A]): RIO[ZEnv, A] =
-    ZIO.environment[ZEnv] @@
-      NoLogger.withNoLogger @@
-      InMemoryTodoRepository.withInMemoryRepository >>> task
+  def withEnv[A](task: TodoTask[A]): RIO[ZEnv, A] = task.provideLayer(
+    ZEnv.live ++
+      NoLogger.withNoLogger ++
+      InMemoryTodoRepository.withInMemoryRepository
+  )
 
   val setupReq: Request[TodoTask] =
     request[TodoTask](Method.POST, "/")

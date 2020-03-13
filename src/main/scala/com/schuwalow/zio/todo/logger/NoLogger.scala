@@ -1,15 +1,13 @@
 package com.schuwalow.zio.todo.logger
 
 import zio._
-import zio.macros.delegate._
 import sourcecode._
 
 object NoLogger {
 
-  def withNoLogger: EnrichWith[Logger] =
-    enrichWith[Logger](new Logger {
-      val logger: NoLogger.Service[Any] = new NoLogger.Service[Any] {}
-    })
+  def withNoLogger = ZLayer.succeed[Logger.Service[Any]](
+    new NoLogger.Service[Any] {}
+  )
 
   trait Service[R] extends Logger.Service[R] {
 

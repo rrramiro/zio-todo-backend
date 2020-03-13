@@ -3,11 +3,6 @@ package com.schuwalow.zio.todo.logger
 import zio.URIO
 import sourcecode._
 
-//@zio.macros.annotation.accessible
-trait Logger {
-  val logger: Logger.Service[Any]
-}
-
 object Logger {
 
   trait Service[R] {
@@ -47,5 +42,4 @@ object Logger {
       file: File
     ): URIO[R, Unit]
   }
-
 }
