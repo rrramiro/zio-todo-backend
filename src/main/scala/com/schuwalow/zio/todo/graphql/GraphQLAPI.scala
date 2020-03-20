@@ -1,10 +1,11 @@
 package com.schuwalow.zio.todo.graphql
 
 import caliban.GraphQL.graphQL
-import caliban.{ GraphQL, RootResolver }
+import caliban._
 import caliban.Value.IntValue
 import caliban.introspection.adt._
 import caliban.schema.Annotations._
+import caliban.schema.Step.ObjectStep
 import caliban.schema._
 import caliban.wrappers.ApolloTracing.apolloTracing
 import caliban.wrappers.Wrappers._
@@ -26,7 +27,14 @@ class GraphQLAPI[R <: Repository with console.Console with clock.Clock]
       PureStep(IntValue(value.value))
   }
 
+  implicit val _anySchema = new Schema[Any, _Any] {
+    override def toType(isInput: Boolean): __Type = Types.makeScalar("_Any")
+    override def resolve(value: _Any): Step[Any] = ObjectStep[Any]("_Any", fields = Map.empty[String, Step[Any]])
+  }
+
   case class Queries(
+    _entities: EntitiesArgs => URIO[R, List[_Entity]],
+    _service: URIO[R, _Service],
     @GQLDescription("Return all todo items")
     allTodoItems: URIO[R, List[TodoItem]],
     todoItem: TodoItemArgs => URIO[R, Option[TodoItem]])
@@ -39,10 +47,19 @@ class GraphQLAPI[R <: Repository with console.Console with clock.Clock]
 
   //case class Subscriptions(characterDeleted: ZStream[R, Nothing, String])
 
-  val api: GraphQL[R] =
+  def _entities(args: EntitiesArgs) = {
+    println(args.representations)
+    IO.succeed(List.empty[_Entity])
+  }
+
+  def _service = IO.succeed(_Service(api.render))
+
+  lazy val api: GraphQL[R] =
     graphQL(
       RootResolver(
         Queries(
+          _entities,
+          _service,
           getAll,
           args => getById(args.id)
         ),

@@ -43,6 +43,9 @@ object TodoGraphQLSpecUtils {
 
   val graphqlapi = new GraphQLAPI[AppEnv]
 
+  println("--------------------------------------------")
+  println(graphqlapi.api.render)
+
   val testingBackend: TodoTask[TodoSttpBackend] = ZIO.runtime[AppEnv] >>= {
     implicit rts =>
       graphqlapi.api.interpreter.map { interpreter =>

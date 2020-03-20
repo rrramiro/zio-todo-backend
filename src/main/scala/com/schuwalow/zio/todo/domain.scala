@@ -1,10 +1,22 @@
 package com.schuwalow.zio.todo
 
-import io.circe.{ Decoder, Encoder }
+//import caliban.Value.EnumValue
+//import caliban.parsing.adt.Directive
+//import caliban.schema.Annotations._
+import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 import io.getquill.Embedded
 
 object domain {
+
+  //@GQLDirective(Directive("key", Map("fields" -> EnumValue("_FieldSet"))))
+  final case class  _Any(b: Boolean =  false)
+
+  final case class _Entity(b: Boolean =  false)
+
+  final case class _Service(sdl: String)
+
+  final case class EntitiesArgs(representations: List[_Any])
 
   final case class TodoId(value: Long) extends AnyVal
 
