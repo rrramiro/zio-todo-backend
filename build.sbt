@@ -1,11 +1,14 @@
-val http4sVersion   = "0.21.1"
+val http4sVersion   = "0.21.4"
 val circeVersion    = "0.13.0"
-val doobieVersion   = "0.8.8"
+val doobieVersion   = "0.9.0"
 val zioVersion      = "1.0.0-RC18-2"
+val zioCatsVersion  = "2.0.0.0-RC13"
+val zioReactVersion = "1.0.3.5-RC6"
+val fs2Version      = "2.3.0"
 val silencerVersion = "1.6.0"
 val acyclicVersion  = "0.2.0"
-val calibanVersion  = "0.7.0"
-val sttpVersion     = "2.0.5"
+val calibanVersion  = "0.7.6"
+val sttpVersion     = "2.1.1"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -122,6 +125,7 @@ lazy val root = (project in file("."))
       "com.github.ghostdogpr"        %% "caliban"                     % calibanVersion,
       "com.github.ghostdogpr"        %% "caliban-http4s"              % calibanVersion,
       "com.github.ghostdogpr"        %% "caliban-client"              % calibanVersion,
+      "com.github.ghostdogpr"        %% "caliban-federation"          % calibanVersion,
       "org.tpolecat"                 %% "doobie-core"                 % doobieVersion,
       "org.tpolecat"                 %% "doobie-h2"                   % doobieVersion,
       "org.tpolecat"                 %% "doobie-hikari"               % doobieVersion,
@@ -131,10 +135,10 @@ lazy val root = (project in file("."))
       "dev.zio"                      %% "zio"                         % zioVersion,
       "dev.zio"                      %% "zio-test"                    % zioVersion % Test,
       "dev.zio"                      %% "zio-test-sbt"                % zioVersion % Test,
-      "dev.zio"                      %% "zio-interop-cats"            % "2.0.0.0-RC12",
-      "dev.zio"                      %% "zio-interop-reactivestreams" % "1.0.3.5-RC6",
-      "co.fs2"                       %% "fs2-reactive-streams"        % "2.2.2",
-      "org.flywaydb"                 % "flyway-core"                  % "6.3.0",
+      "dev.zio"                      %% "zio-interop-cats"            % zioCatsVersion,
+      "dev.zio"                      %% "zio-interop-reactivestreams" % zioReactVersion,
+      "co.fs2"                       %% "fs2-reactive-streams"        % fs2Version,
+      "org.flywaydb"                 % "flyway-core"                  % "6.4.1",
       "com.h2database"               % "h2"                           % "1.4.200",
       "org.slf4j"                    % "slf4j-log4j12"                % "1.7.30",
       "com.github.pureconfig"        %% "pureconfig"                  % "0.12.3",
@@ -145,7 +149,7 @@ lazy val root = (project in file("."))
       // plugins
       compilerPlugin("com.lihaoyi" %% "acyclic" % acyclicVersion),
       compilerPlugin(
-        ("io.tryp" % "splain" % "0.5.1").cross(CrossVersion.patch)
+        ("io.tryp" % "splain" % "0.5.5").cross(CrossVersion.patch)
       ), //TODO comment to have the macros "zio.macros.annotation.accessible" working
       compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
       compilerPlugin(

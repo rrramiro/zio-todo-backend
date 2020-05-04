@@ -8,6 +8,7 @@ import caliban.schema.Annotations._
 import caliban.schema._
 import caliban.wrappers.ApolloTracing.apolloTracing
 import caliban.wrappers.Wrappers._
+import caliban.federation._
 import com.schuwalow.zio.todo.domain._
 import com.schuwalow.zio.todo.repository._
 import zio._
@@ -61,4 +62,5 @@ class GraphQLAPI[R <: Repository with console.Console with clock.Clock]
       printSlowQueries(500 millis) @@ // wrapper that logs slow queries
       apolloTracing                   // wrapper for https://github.com/apollographql/apollo-tracing
 
+  val federated = federate(api)
 }

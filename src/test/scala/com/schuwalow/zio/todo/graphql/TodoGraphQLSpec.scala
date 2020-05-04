@@ -1,6 +1,7 @@
 package com.schuwalow.zio.todo.graphql
 
 import caliban.Http4sAdapter
+import cats.effect.Blocker
 import zio._
 import zio.test._
 import zio.test.Assertion.equalTo
@@ -51,7 +52,8 @@ object TodoGraphQLSpecUtils {
             Router[TodoTask](
               "/api/graphql" -> Http4sAdapter.makeHttpService(interpreter)
             ).orNotFound
-          )
+          ),
+          Blocker.liftExecutionContext(rts.platform.executor.asEC)
         )
       }
   }

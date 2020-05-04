@@ -2,6 +2,7 @@ package com.schuwalow.zio.todo
 
 import caliban.Http4sAdapter
 import cats.effect._
+import cats.syntax.apply._
 import com.schuwalow.zio.todo.config._
 import com.schuwalow.zio.todo.graphql.GraphQLAPI
 import com.schuwalow.zio.todo.http.TodoRoutes
@@ -9,7 +10,7 @@ import com.schuwalow.zio.todo.logger._
 import com.schuwalow.zio.todo.repository._
 import fs2.Stream.Compiler._
 import org.http4s.implicits._
-import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.server.blaze._
 import org.http4s.server.middleware.CORS
 import org.http4s.server.Router
 import zio._
@@ -46,20 +47,25 @@ object Main extends ManagedApp {
   def runHttp[R <: ZEnv with Logger with Repository](
     cfg: Config
   ): RIO[R, Unit] = ZIO.runtime[R] >>= { implicit rts =>
-    new GraphQLAPI[R].api.interpreter >>= { interpreter =>
-      BlazeServerBuilder[RIO[R, *]]
-        .bindHttp(cfg.appConfig.port, "0.0.0.0")
-        .withHttpApp(CORS {
-          Router[RIO[R, *]](
-            "/todos" -> new TodoRoutes(
-              s"${cfg.appConfig.baseUrl}/todos"
-            ).routes,
-            "/api/graphql" -> Http4sAdapter.makeHttpService(interpreter)
-          ).orNotFound
-        })
-        .serve
-        .compile[RIO[R, *], RIO[R, *], ExitCode]
-        .drain
+    val graphql = new GraphQLAPI[R]
+    (graphql.federated.interpreter, graphql.api.interpreter).tupled >>= {
+      case (federatedInterpreter, apiInterpreter) =>
+        BlazeServerBuilder[RIO[R, *]](rts.platform.executor.asEC)
+          .bindHttp(cfg.appConfig.port, "0.0.0.0")
+          .withHttpApp(CORS {
+            Router[RIO[R, *]](
+              "/todos" -> new TodoRoutes(
+                s"${cfg.appConfig.baseUrl}/todos"
+              ).routes,
+              "/api/graphql" -> Http4sAdapter.makeHttpService(apiInterpreter),
+              "/api/federated" -> Http4sAdapter.makeHttpService(
+                federatedInterpreter
+              )
+            ).orNotFound
+          })
+          .serve
+          .compile[RIO[R, *], RIO[R, *], ExitCode]
+          .drain
     }
   }
 
