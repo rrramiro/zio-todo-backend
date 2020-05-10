@@ -3,11 +3,11 @@ val circeVersion    = "0.13.0"
 val doobieVersion   = "0.9.0"
 val zioVersion      = "1.0.0-RC18-2"
 val zioCatsVersion  = "2.0.0.0-RC13"
-val zioReactVersion = "1.0.3.5-RC6"
+val zioReactVersion = "1.0.3.5-RC7"
 val fs2Version      = "2.3.0"
 val silencerVersion = "1.6.0"
 val acyclicVersion  = "0.2.0"
-val calibanVersion  = "0.7.6"
+val calibanVersion  = "0.7.8"
 val sttpVersion     = "2.1.1"
 
 val wartremoverCompileExclusions = Seq(
