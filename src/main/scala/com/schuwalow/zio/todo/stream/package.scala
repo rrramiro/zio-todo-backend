@@ -15,6 +15,7 @@ package object stream {
           stream.toUnicastPublisher().toStream().catchAll(_ => ZStream.empty)
         })
         .flatMap(identity)
+    /*
 
     def toZStream2: ZStream[R, Nothing, A] =
       ZStream.managed {
@@ -42,6 +43,7 @@ package object stream {
           } yield ZStream.fromQueue(queue).unTake
         }
       }.flatMap(_.catchAll(_ => ZStream.empty))
+   */
   }
 
 }

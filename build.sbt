@@ -1,7 +1,7 @@
 val http4sVersion   = "0.21.4"
 val circeVersion    = "0.13.0"
 val doobieVersion   = "0.9.0"
-val zioVersion      = "1.0.0-RC18-2"
+val zioVersion      = "1.0.0-RC19"
 val zioCatsVersion  = "2.0.0.0-RC13"
 val zioReactVersion = "1.0.3.5-RC7"
 val fs2Version      = "2.3.0"
@@ -138,7 +138,7 @@ lazy val root = (project in file("."))
       "dev.zio"                      %% "zio-interop-cats"            % zioCatsVersion,
       "dev.zio"                      %% "zio-interop-reactivestreams" % zioReactVersion,
       "co.fs2"                       %% "fs2-reactive-streams"        % fs2Version,
-      "org.flywaydb"                 % "flyway-core"                  % "6.4.1",
+      "org.flywaydb"                 % "flyway-core"                  % "6.4.2",
       "com.h2database"               % "h2"                           % "1.4.200",
       "org.slf4j"                    % "slf4j-log4j12"                % "1.7.30",
       "com.github.pureconfig"        %% "pureconfig"                  % "0.12.3",
@@ -149,7 +149,7 @@ lazy val root = (project in file("."))
       // plugins
       compilerPlugin("com.lihaoyi" %% "acyclic" % acyclicVersion),
       compilerPlugin(
-        ("io.tryp" % "splain" % "0.5.5").cross(CrossVersion.patch)
+        ("io.tryp" % "splain" % "0.5.6").cross(CrossVersion.patch)
       ), //TODO comment to have the macros "zio.macros.annotation.accessible" working
       compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
       compilerPlugin(
