@@ -1,14 +1,14 @@
 val http4sVersion   = "0.21.4"
 val circeVersion    = "0.13.0"
 val doobieVersion   = "0.9.0"
-val zioVersion      = "1.0.0-RC19"
-val zioCatsVersion  = "2.0.0.0-RC13"
-val zioReactVersion = "1.0.3.5-RC7"
+val zioVersion      = "1.0.0-RC19-2"
+val zioCatsVersion  = "2.0.0.0-RC14"
+val zioReactVersion = "1.0.3.5-RC8"
 val fs2Version      = "2.3.0"
 val silencerVersion = "1.6.0"
 val acyclicVersion  = "0.2.0"
 val calibanVersion  = "0.7.8"
-val sttpVersion     = "2.1.1"
+val sttpVersion     = "2.1.2"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
