@@ -1,7 +1,6 @@
 package com.schuwalow.zio.todo
 
 import caliban.Http4sAdapter
-import cats.effect._
 import cats.syntax.apply._
 import com.schuwalow.zio.todo.config._
 import com.schuwalow.zio.todo.graphql.GraphQLAPI
@@ -21,7 +20,7 @@ import pureconfig.error.ConfigReaderException
 
 object Main extends ManagedApp {
 
-  override def run(args: List[String]): ZManaged[ZEnv, Nothing, Int] =
+  override def run(args: List[String]): ZManaged[ZEnv, Nothing, ExitCode] =
     (for {
       cfg <- ZIO
               .fromEither(ConfigSource.default.load[Config])
@@ -39,9 +38,9 @@ object Main extends ManagedApp {
       .foldM(
         err =>
           putStrLn(s"Execution failed with: ${err.getMessage}")
-            .as(1)
+            .as(ExitCode.failure)
             .toManaged_,
-        _ => ZManaged.succeed(0)
+        _ => ZManaged.succeed(ExitCode.success)
       )
 
   def runHttp[R <: ZEnv with Logger with Repository](
@@ -64,7 +63,7 @@ object Main extends ManagedApp {
             ).orNotFound
           })
           .serve
-          .compile[RIO[R, *], RIO[R, *], ExitCode]
+          .compile//[RIO[R, *], RIO[R, *], cats.effect.ExitCode]
           .drain
     }
   }
