@@ -3,12 +3,12 @@ val circeVersion    = "0.13.0"
 val doobieVersion   = "0.9.0"
 val zioVersion      = "1.0.0-RC20"
 val zioCatsVersion  = "2.1.3.0-RC15" //"2.0.0.0-RC14"
-val zioReactVersion = "1.0.3.5-RC9"
+val zioReactVersion = "1.0.3.5-RC10"
 val fs2Version      = "2.3.0"
 val silencerVersion = "1.6.0"
 val acyclicVersion  = "0.2.0"
-val calibanVersion  = "0.8.0"
-val sttpVersion     = "2.1.4"
+val calibanVersion  = "0.8.1"
+val sttpVersion     = "2.1.5"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -138,7 +138,7 @@ lazy val root = (project in file("."))
       "dev.zio"                      %% "zio-interop-cats"            % zioCatsVersion,
       "dev.zio"                      %% "zio-interop-reactivestreams" % zioReactVersion,
       "co.fs2"                       %% "fs2-reactive-streams"        % fs2Version,
-      "org.flywaydb"                 % "flyway-core"                  % "6.4.2",
+      "org.flywaydb"                 % "flyway-core"                  % "6.4.3",
       "com.h2database"               % "h2"                           % "1.4.200",
       "org.slf4j"                    % "slf4j-log4j12"                % "1.7.30",
       "com.github.pureconfig"        %% "pureconfig"                  % "0.12.3",
