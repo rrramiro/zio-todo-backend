@@ -14,7 +14,7 @@ package object stream {
         .fromEffect(ZIO.runtime[R].map { implicit runtime =>
           stream.toUnicastPublisher().toStream().catchAll(_ => ZStream.empty)
         })
-        .flatMap(identity)
+        .flatten
     /*
 
     def toZStream2: ZStream[R, Nothing, A] =
