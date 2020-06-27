@@ -21,7 +21,7 @@ class GraphQLAPI[R <: Repository with console.Console with clock.Clock]
     extends GenericSchema[R] {
 
   implicit val todoIdSchema: Schema[Any, TodoId] = new Schema[Any, TodoId] {
-    override def toType(isInput: Boolean): __Type = Types.long
+    override def toType(isInput: Boolean, isSubscription: Boolean): __Type = Types.long
 
     override def resolve(value: TodoId): Step[Any] =
       PureStep(IntValue(value.value))
