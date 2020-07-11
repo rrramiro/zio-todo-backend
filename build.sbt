@@ -7,7 +7,7 @@ val zioReactVersion = "1.0.3.5-RC12"
 val fs2Version      = "2.4.2"
 val silencerVersion = "1.6.0"
 val acyclicVersion  = "0.2.0"
-val calibanVersion  = "0.8.3"
+val calibanVersion  = "0.9.0"
 val sttpVersion     = "2.2.1"
 
 val wartremoverCompileExclusions = Seq(
