@@ -74,7 +74,7 @@ lazy val root = (project in file("."))
         s"https://github.com/mschuwalow/${name.value}/blob/v${version.value}/LICENSE"
       )
     ),
-    scalaVersion := "2.13.2",
+    scalaVersion := "2.13.3",
     testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework")),
     scalacOptions := Seq(
       "-feature",
@@ -86,11 +86,8 @@ lazy val root = (project in file("."))
       "-language:higherKinds",
       "-language:existentials",
       "-Xfatal-warnings",
-      "-Xlint:-infer-any,_",
-      "-Xlint:constant",
-      "-Xlint:byname-implicit",
+      "-Xlint:-infer-any,-byname-implicit,_",
       //"-Xlog-implicits",
-      //"-Wmacros:none", //both
       "-Ywarn-value-discard",
       "-Ywarn-numeric-widen",
       "-Ywarn-extra-implicit",
