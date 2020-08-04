@@ -1,14 +1,14 @@
 val http4sVersion   = "0.21.6"
 val circeVersion    = "0.13.0"
 val doobieVersion   = "0.9.0"
-val zioVersion      = "1.0.0-RC21-2"
+val zioVersion      = "1.0.0-RC21-2" //"1.0.0"
 val zioCatsVersion  = "2.1.4.0-RC17"
-val zioReactVersion = "1.0.3.5-RC12"
+val zioReactVersion = "1.0.3.5-RC12" //"1.0.3.5"
 val fs2Version      = "2.4.2"
-val silencerVersion = "1.7.0"
+val silencerVersion = "1.7.1"
 val acyclicVersion  = "0.2.0"
 val calibanVersion  = "0.9.0"
-val sttpVersion     = "2.2.1"
+val sttpVersion     = "2.2.3"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -137,7 +137,7 @@ lazy val root = (project in file("."))
       "dev.zio"                      %% "zio-interop-cats"            % zioCatsVersion,
       "dev.zio"                      %% "zio-interop-reactivestreams" % zioReactVersion,
       "co.fs2"                       %% "fs2-reactive-streams"        % fs2Version,
-      "org.flywaydb"                 % "flyway-core"                  % "6.5.1",
+      "org.flywaydb"                 % "flyway-core"                  % "6.5.3",
       "com.h2database"               % "h2"                           % "1.4.200",
       "org.slf4j"                    % "slf4j-log4j12"                % "1.7.30",
       "com.github.pureconfig"        %% "pureconfig"                  % "0.13.0",
@@ -182,6 +182,16 @@ releaseProcess := Seq(
   commitNextVersion,
   pushChanges
 )
+
+
+missinglinkIgnoreDestinationPackages ++= Seq(
+  IgnoredPackage("play.api.libs")
+)
+missinglinkIgnoreSourcePackages ++= Seq(
+  IgnoredPackage("org.flywaydb.core"),
+  IgnoredPackage("com.zaxxer.hikari")
+)
+//missinglinkExcludedDependencies += moduleFilter(organization = "ch.qos.logback", name = "logback-core")
 
 val mergeBranch = "master"
 
