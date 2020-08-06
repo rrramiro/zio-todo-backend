@@ -16,7 +16,7 @@ addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
 
 addSbtPlugin("ch.epfl.scala" % "sbt-missinglink" % "0.3.1")
 
-addSbtPlugin("io.get-coursier" % "sbt-coursier" % "2.0.0-RC6-8")
+//addSbtPlugin("io.get-coursier" % "sbt-coursier" % "2.0.0-RC6-8")
 
 addSbtPlugin("com.dwijnand" % "sbt-reloadquick" % "1.0.0+67-7bcd4294")
 

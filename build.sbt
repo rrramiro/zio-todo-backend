@@ -1,14 +1,19 @@
-val http4sVersion   = "0.21.6"
-val circeVersion    = "0.13.0"
-val doobieVersion   = "0.9.0"
-val zioVersion      = "1.0.0-RC21-2" //"1.0.0"
-val zioCatsVersion  = "2.1.4.0-RC17"
-val zioReactVersion = "1.0.3.5-RC12" //"1.0.3.5"
-val fs2Version      = "2.4.2"
-val silencerVersion = "1.7.1"
-val acyclicVersion  = "0.2.0"
-val calibanVersion  = "0.9.0"
-val sttpVersion     = "2.2.3"
+val http4sVersion     = "0.21.6"
+val circeVersion      = "0.13.0"
+val doobieVersion     = "0.9.0"
+val zioVersion        = "1.0.0-RC21-2" //"1.0.0"
+val zioCatsVersion    = "2.1.4.0-RC17" // "2.1.4.0"
+val zioReactVersion   = "1.0.3.5-RC12" //"1.0.3.5"
+val zioIzumiVersion   = "1.0.0-M5"
+val fs2Version        = "2.4.2"
+val silencerVersion   = "1.7.1"
+val acyclicVersion    = "0.2.0"
+val calibanVersion    = "0.9.0"
+val sttpVersion       = "2.2.3"
+val pureconfigVersion = "0.13.0"
+val catsVersion       = "2.1.1"
+val catsEffectVersion = "2.1.4"
+val quillVersion      = "3.5.1"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -117,6 +122,9 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "org.http4s"                   %% "http4s-blaze-server"         % http4sVersion,
       "org.http4s"                   %% "http4s-dsl"                  % http4sVersion,
+      "org.http4s"                   %% "http4s-circe"                % http4sVersion,
+      "org.http4s"                   %% "http4s-core"                 % http4sVersion,
+      "org.http4s"                   %% "http4s-server"               % http4sVersion,
       "io.circe"                     %% "circe-core"                  % circeVersion,
       "io.circe"                     %% "circe-generic"               % circeVersion,
       "io.circe"                     %% "circe-optics"                % circeVersion,
@@ -126,21 +134,35 @@ lazy val root = (project in file("."))
       "com.github.ghostdogpr"        %% "caliban-client"              % calibanVersion,
       "com.github.ghostdogpr"        %% "caliban-federation"          % calibanVersion,
       "org.tpolecat"                 %% "doobie-core"                 % doobieVersion,
+      "org.tpolecat"                 %% "doobie-free"                 % doobieVersion,
       "org.tpolecat"                 %% "doobie-h2"                   % doobieVersion,
       "org.tpolecat"                 %% "doobie-hikari"               % doobieVersion,
       "org.tpolecat"                 %% "doobie-quill"                % doobieVersion,
       "com.softwaremill.sttp.client" %% "core"                        % sttpVersion,
       "com.softwaremill.sttp.client" %% "http4s-backend"              % sttpVersion % Test,
       "dev.zio"                      %% "zio"                         % zioVersion,
+      "dev.zio"                      %% "zio-streams"                 % zioVersion,
       "dev.zio"                      %% "zio-test"                    % zioVersion % Test,
       "dev.zio"                      %% "zio-test-sbt"                % zioVersion % Test,
       "dev.zio"                      %% "zio-interop-cats"            % zioCatsVersion,
       "dev.zio"                      %% "zio-interop-reactivestreams" % zioReactVersion,
+      "dev.zio"                      %% "izumi-reflect"               % zioIzumiVersion,
+      "co.fs2"                       %% "fs2-core"                    % fs2Version,
       "co.fs2"                       %% "fs2-reactive-streams"        % fs2Version,
+      "com.github.pureconfig"        %% "pureconfig"                  % pureconfigVersion,
+      "com.github.pureconfig"        %% "pureconfig-core"             % pureconfigVersion,
+      "com.github.pureconfig"        %% "pureconfig-generic"          % pureconfigVersion,
+      "org.typelevel"                %% "cats-core"                   % catsVersion,
+      "org.typelevel"                %% "cats-free"                   % catsVersion,
+      "org.typelevel"                %% "cats-effect"                 % catsEffectVersion,
+      "io.getquill"                  %% "quill-core"                  % quillVersion,
+      "io.getquill"                  %% "quill-jdbc"                  % quillVersion,
+      "io.getquill"                  %% "quill-sql"                   % quillVersion,
+      "com.zaxxer"                   % "HikariCP"                     % "3.4.5",
       "org.flywaydb"                 % "flyway-core"                  % "6.5.3",
       "com.h2database"               % "h2"                           % "1.4.200",
+      "org.slf4j"                    % "slf4j-api"                    % "1.7.30",
       "org.slf4j"                    % "slf4j-log4j12"                % "1.7.30",
-      "com.github.pureconfig"        %% "pureconfig"                  % "0.13.0",
       "com.lihaoyi"                  %% "sourcecode"                  % "0.2.1",
       "com.lihaoyi"                  %% "acyclic"                     % acyclicVersion % "provided",
       ("com.github.ghik" % "silencer-lib" % silencerVersion % "provided")
@@ -182,7 +204,6 @@ releaseProcess := Seq(
   commitNextVersion,
   pushChanges
 )
-
 
 missinglinkIgnoreDestinationPackages ++= Seq(
   IgnoredPackage("play.api.libs")

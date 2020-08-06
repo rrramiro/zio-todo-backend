@@ -63,7 +63,7 @@ object Main extends ManagedApp {
             ).orNotFound
           })
           .serve
-          .compile//[RIO[R, *], RIO[R, *], cats.effect.ExitCode]
+          .compile //[RIO[R, *], RIO[R, *], cats.effect.ExitCode]
           .drain
     }
   }
