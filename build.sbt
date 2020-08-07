@@ -1,19 +1,19 @@
 val http4sVersion     = "0.21.6"
 val circeVersion      = "0.13.0"
 val doobieVersion     = "0.9.0"
-val zioVersion        = "1.0.0-RC21-2" //"1.0.0"
-val zioCatsVersion    = "2.1.4.0-RC17" // "2.1.4.0"
-val zioReactVersion   = "1.0.3.5-RC12" //"1.0.3.5"
+val zioVersion        = "1.0.0"
+val zioCatsVersion    = "2.1.4.0"
+val zioReactVersion   = "1.0.3.5"
 val zioIzumiVersion   = "1.0.0-M5"
 val fs2Version        = "2.4.2"
 val silencerVersion   = "1.7.1"
 val acyclicVersion    = "0.2.0"
-val calibanVersion    = "0.9.0"
-val sttpVersion       = "2.2.3"
+val calibanVersion    = "0.9.1"
+val sttpVersion       = "2.2.4"
 val pureconfigVersion = "0.13.0"
 val catsVersion       = "2.1.1"
 val catsEffectVersion = "2.1.4"
-val quillVersion      = "3.5.1"
+val quillVersion      = "3.5.1" // 3.5.2 wait for doobie
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
