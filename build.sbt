@@ -1,19 +1,24 @@
-val http4sVersion     = "0.21.6"
+val http4sVersion     = "0.21.7"
 val circeVersion      = "0.13.0"
 val doobieVersion     = "0.9.0"
-val zioVersion        = "1.0.0"
+val zioVersion        = "1.0.1"
 val zioCatsVersion    = "2.1.4.0"
 val zioReactVersion   = "1.0.3.5"
 val zioIzumiVersion   = "1.0.0-M5"
-val fs2Version        = "2.4.2"
+val fs2Version        = "2.4.3"
 val silencerVersion   = "1.7.1"
 val acyclicVersion    = "0.2.0"
 val calibanVersion    = "0.9.1"
-val sttpVersion       = "2.2.4"
+val sttpVersion       = "2.2.5"
 val pureconfigVersion = "0.13.0"
 val catsVersion       = "2.1.1"
 val catsEffectVersion = "2.1.4"
 val quillVersion      = "3.5.1" // 3.5.2 wait for doobie
+val hikariCPVersion   = "3.4.5"
+val flywayVersion     = "6.5.5"
+val h2Version         = "1.4.200"
+val slf4jVersion      = "1.7.30"
+val sourcecodeVersion = "0.2.1"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -158,12 +163,12 @@ lazy val root = (project in file("."))
       "io.getquill"                  %% "quill-core"                  % quillVersion,
       "io.getquill"                  %% "quill-jdbc"                  % quillVersion,
       "io.getquill"                  %% "quill-sql"                   % quillVersion,
-      "com.zaxxer"                   % "HikariCP"                     % "3.4.5",
-      "org.flywaydb"                 % "flyway-core"                  % "6.5.3",
-      "com.h2database"               % "h2"                           % "1.4.200",
-      "org.slf4j"                    % "slf4j-api"                    % "1.7.30",
-      "org.slf4j"                    % "slf4j-log4j12"                % "1.7.30",
-      "com.lihaoyi"                  %% "sourcecode"                  % "0.2.1",
+      "com.zaxxer"                   % "HikariCP"                     % hikariCPVersion,
+      "org.flywaydb"                 % "flyway-core"                  % flywayVersion,
+      "com.h2database"               % "h2"                           % h2Version,
+      "org.slf4j"                    % "slf4j-api"                    % slf4jVersion,
+      "org.slf4j"                    % "slf4j-log4j12"                % slf4jVersion,
+      "com.lihaoyi"                  %% "sourcecode"                  % sourcecodeVersion,
       "com.lihaoyi"                  %% "acyclic"                     % acyclicVersion % "provided",
       ("com.github.ghik" % "silencer-lib" % silencerVersion % "provided")
         .cross(CrossVersion.full),
