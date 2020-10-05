@@ -189,6 +189,7 @@ lazy val root = (project in file("."))
   )
 
 //release
+/*
 import ReleaseTransformations._
 import ReleasePlugin.autoImport._
 import sbtrelease.{ Git, Utilities }
@@ -209,7 +210,7 @@ releaseProcess := Seq(
   commitNextVersion,
   pushChanges
 )
-
+*/
 missinglinkIgnoreDestinationPackages ++= Seq(
   IgnoredPackage("play.api.libs")
 )
@@ -218,7 +219,7 @@ missinglinkIgnoreSourcePackages ++= Seq(
   IgnoredPackage("com.zaxxer.hikari")
 )
 //missinglinkExcludedDependencies += moduleFilter(organization = "ch.qos.logback", name = "logback-core")
-
+/*
 val mergeBranch = "master"
 
 val mergeReleaseVersion = ReleaseStep(action = st => {
@@ -236,5 +237,5 @@ val mergeReleaseVersion = ReleaseStep(action = st => {
   git.cmd("checkout", curBranch) ! st.log
   st
 })
-
+*/
 Global / onChangedBuildSource := ReloadOnSourceChanges
