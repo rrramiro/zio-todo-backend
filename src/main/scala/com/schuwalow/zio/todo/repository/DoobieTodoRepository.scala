@@ -2,7 +2,6 @@ package com.schuwalow.zio.todo.repository
 
 import com.schuwalow.zio.todo.domain._
 import com.schuwalow.zio.todo.config._
-import com.schuwalow.zio.todo.stream._
 import cats.effect.Blocker
 import cats.implicits._
 import io.getquill.{ idiom => _, _ }
@@ -16,6 +15,7 @@ import org.flywaydb.core.Flyway
 import zio._
 import zio.blocking.Blocking
 import zio.interop.catz._
+import zio.stream.interop.fs2z._
 import zio.stream.ZStream
 
 object DoobieTodoRepository {
@@ -112,10 +112,10 @@ object DoobieTodoRepository {
         .unit
         .orDie
 
-    override def getAllStreamed: ZStream[R, Nothing, TodoItem] =
+    override def getAllStreamed: ZStream[R, Throwable, TodoItem] =
       SqlContext.getAllStreamed
         .transact(xa)
-        .toZStream
+        .toZStream()
 
     override def create(
       title: String,

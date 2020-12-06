@@ -57,7 +57,7 @@ object InMemoryTodoRepository {
                  }
       } yield result
 
-    override def getAllStreamed: ZStream[R, Nothing, TodoItem] = ZStream.empty
+    override def getAllStreamed: ZStream[R, Throwable, TodoItem] = ZStream.empty
   }
 
 }

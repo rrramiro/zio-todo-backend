@@ -1,6 +1,6 @@
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.7.5")
 
-addSbtPlugin("com.github.cb372" % "sbt-explicit-dependencies" % "0.2.13")
+addSbtPlugin("com.github.cb372" % "sbt-explicit-dependencies" % "0.2.16")
 
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.1")
 

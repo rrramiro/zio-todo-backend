@@ -34,7 +34,7 @@ package object repository
   ): URIO[Repository, Option[TodoItem]] =
     ZIO.accessM(_.get.update(id, title, completed, order))
 
-  def getAllStreamed: ZStream[Repository, Nothing, TodoItem] =
+  def getAllStreamed: ZStream[Repository, Throwable, TodoItem] =
     ZStream.accessStream(_.get.getAllStreamed)
 
 }

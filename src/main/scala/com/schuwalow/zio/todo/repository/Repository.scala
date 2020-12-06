@@ -24,7 +24,7 @@ object Repository {
       order: Option[Int]
     ): ZIO[R, Nothing, Option[TodoItem]]
 
-    def getAllStreamed: ZStream[R, Nothing, TodoItem]
+    def getAllStreamed: ZStream[R, Throwable, TodoItem]
   }
 
 }
