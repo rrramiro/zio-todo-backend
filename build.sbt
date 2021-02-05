@@ -1,12 +1,12 @@
-val http4sVersion     = "0.21.13"
+val http4sVersion     = "0.21.18"
 val circeVersion      = "0.13.0"
 val doobieVersion     = "0.10.0"
-val zioVersion        = "1.0.3"
+val zioVersion        = "1.0.4-2"
 val zioCatsVersion    = "2.2.0.1"
 val zioReactVersion   = "1.0.3.5"
-val zioIzumiVersion   = "1.0.0-M9"
+val zioIzumiVersion   = "1.0.0-M12"
 val fs2Version        = "2.5.0"
-val silencerVersion   = "1.7.1"
+val silencerVersion   = "1.7.2"
 val acyclicVersion    = "0.2.0"
 val calibanVersion    = "0.9.4"
 val sttpVersion       = "2.2.9"
@@ -14,12 +14,14 @@ val pureconfigVersion = "0.14.0"
 val catsVersion       = "2.3.1"
 val catsEffectVersion = "2.3.1"
 val quillVersion      = "3.6.0"
-val hikariCPVersion   = "3.4.5"
-val flywayVersion     = "7.4.0"
+val hikariCPVersion   = "4.0.1"
+val flywayVersion     = "7.5.2"
 val h2Version         = "1.4.200"
 val slf4jVersion      = "1.7.30"
-val sourcecodeVersion = "0.2.1"
-val kindProjectorVersion = "0.11.2"
+val sourcecodeVersion = "0.2.3"
+val kindProjectorVersion = "0.11.3"
+val splainVersion        = "0.5.8"
+val bmfVersion           = "0.3.1"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -176,9 +178,9 @@ lazy val root = (project in file("."))
       // plugins
       compilerPlugin("com.lihaoyi" %% "acyclic" % acyclicVersion),
       compilerPlugin(
-        ("io.tryp" % "splain" % "0.5.8").cross(CrossVersion.patch)
+        ("io.tryp" % "splain" % splainVersion).cross(CrossVersion.patch)
       ), //TODO comment to have the macros "zio.macros.annotation.accessible" working
-      compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
+      compilerPlugin("com.olegpy" %% "better-monadic-for" % bmfVersion),
       compilerPlugin(
         ("org.typelevel" % "kind-projector" % kindProjectorVersion).cross(CrossVersion.full)
       ),
