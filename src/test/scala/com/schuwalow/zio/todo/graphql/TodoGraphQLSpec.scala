@@ -8,10 +8,11 @@ import zio.test.Assertion.equalTo
 import zio.interop.catz._
 import com.schuwalow.zio.todo.logger._
 import com.schuwalow.zio.todo.repository._
-import com.schuwalow.zio.todo.graphql.{ Client => GraphQLClient }
-import sttp.client._
-import sttp.client.http4s.Http4sBackend
-import org.http4s.client.{ Client => Http4sClient }
+import com.schuwalow.zio.todo.graphql.{Client => GraphQLClient}
+import sttp.client3._
+import sttp.client3.http4s.Http4sBackend
+import sttp.capabilities.fs2.Fs2Streams
+import org.http4s.client.{Client => Http4sClient}
 import org.http4s.server.Router
 import org.http4s.syntax.kleisli._
 import TodoGraphQLSpecUtils._
@@ -38,7 +39,7 @@ object TodoGraphQLSpecUtils {
   type TodoTask[A] = RIO[AppEnv, A]
 
   type TodoSttpBackend =
-    SttpBackend[TodoTask, fs2.Stream[TodoTask, Byte], NothingT]
+    SttpBackend[TodoTask, Fs2Streams[TodoTask]]
 
   val baseUrl = uri"http://localhost:8080/api/graphql"
 
@@ -48,12 +49,12 @@ object TodoGraphQLSpecUtils {
     implicit rts =>
       graphqlapi.api.interpreter.map { interpreter =>
         Http4sBackend.usingClient(
-          Http4sClient.fromHttpApp(
+          client = Http4sClient.fromHttpApp(
             Router[TodoTask](
               "/api/graphql" -> Http4sAdapter.makeHttpService(interpreter)
             ).orNotFound
           ),
-          Blocker.liftExecutionContext(rts.platform.executor.asEC)
+          blocker = Blocker.liftExecutionContext(rts.platform.executor.asEC)
         )
       }
   }
@@ -72,7 +73,7 @@ object TodoGraphQLSpecUtils {
     backend: TodoSttpBackend) {
 
     def call: TodoTask[A] =
-      builder.toRequest(baseUrl).send().map(_.body).absolve
+      builder.toRequest(baseUrl).send(backend).map(_.body).absolve
   }
 
 }

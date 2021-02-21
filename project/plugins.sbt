@@ -20,10 +20,10 @@ addSbtPlugin("ch.epfl.scala" % "sbt-missinglink" % "0.3.1")
 
 addSbtPlugin("com.dwijnand" % "sbt-reloadquick" % "1.0.0+67-7bcd4294")
 
-//addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.1")
-addSbtPlugin("org.jmotor.sbt" % "sbt-dependency-updates" % "1.2.2")
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.1")
+//addSbtPlugin("org.jmotor.sbt" % "sbt-dependency-updates" % "1.2.2")
 
-addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "2.0.0")
+addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "2.0.0") //"3.1.1"
 
 addSbtPlugin("com.github.ghostdogpr" % "caliban-codegen" % "0.7.5")
 

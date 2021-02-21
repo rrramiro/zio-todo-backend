@@ -1,21 +1,21 @@
-val http4sVersion     = "0.21.18"
-val circeVersion      = "0.13.0"
-val doobieVersion     = "0.10.0"
+val http4sVersion     = "0.21.19" //"0.22.0-M3"
+val circeVersion      = "0.14.0-M3"
+val doobieVersion     = "0.11.0-M2"
 val zioVersion        = "1.0.4-2"
-val zioCatsVersion    = "2.2.0.1"
+val zioCatsVersion    = "2.3.1.0"
 val zioReactVersion   = "1.0.3.5"
-val zioIzumiVersion   = "1.0.0-M12"
-val fs2Version        = "2.5.0"
+val zioIzumiVersion   = "1.0.0-M13"
+val fs2Version        = "2.5.3" //"3.0.0-M9"
 val silencerVersion   = "1.7.2"
 val acyclicVersion    = "0.2.0"
-val calibanVersion    = "0.9.4"
-val sttpVersion       = "2.2.9"
+val calibanVersion    = "0.9.5"
+val sttpVersion       = "3.1.3"
 val pureconfigVersion = "0.14.0"
-val catsVersion       = "2.3.1"
-val catsEffectVersion = "2.3.1"
-val quillVersion      = "3.6.0"
-val hikariCPVersion   = "4.0.1"
-val flywayVersion     = "7.5.2"
+val catsVersion       = "2.4.2"
+val catsEffectVersion = "2.3.3" //"3.0.0-RC2"
+val quillVersion      = "3.6.1"
+val hikariCPVersion   = "4.0.2"
+val flywayVersion     = "7.5.3"
 val h2Version         = "1.4.200"
 val slf4jVersion      = "1.7.30"
 val sourcecodeVersion = "0.2.3"
@@ -135,7 +135,7 @@ lazy val root = (project in file("."))
       "org.http4s"                   %% "http4s-server"               % http4sVersion,
       "io.circe"                     %% "circe-core"                  % circeVersion,
       "io.circe"                     %% "circe-generic"               % circeVersion,
-      "io.circe"                     %% "circe-optics"                % circeVersion,
+     // "io.circe"                     %% "circe-optics"                % circeVersion,
       "io.circe"                     %% "circe-literal"               % circeVersion % Test,
       "com.github.ghostdogpr"        %% "caliban"                     % calibanVersion,
       "com.github.ghostdogpr"        %% "caliban-http4s"              % calibanVersion,
@@ -146,8 +146,8 @@ lazy val root = (project in file("."))
       "org.tpolecat"                 %% "doobie-h2"                   % doobieVersion,
       "org.tpolecat"                 %% "doobie-hikari"               % doobieVersion,
       "org.tpolecat"                 %% "doobie-quill"                % doobieVersion,
-      "com.softwaremill.sttp.client" %% "core"                        % sttpVersion,
-      "com.softwaremill.sttp.client" %% "http4s-backend"              % sttpVersion % Test,
+      "com.softwaremill.sttp.client3" %% "core"                       % sttpVersion,
+      "com.softwaremill.sttp.client3" %% "http4s-backend"             % sttpVersion % Test,
       "dev.zio"                      %% "zio"                         % zioVersion,
       "dev.zio"                      %% "zio-streams"                 % zioVersion,
       "dev.zio"                      %% "zio-test"                    % zioVersion % Test,
@@ -215,11 +215,12 @@ releaseProcess := Seq(
 )
 */
 missinglinkIgnoreDestinationPackages ++= Seq(
-  IgnoredPackage("play.api.libs")
+  IgnoredPackage("play.api.libs"), //caliban.interop.play
+  IgnoredPackage("zio.json") // caliban.interop.zio
 )
 missinglinkIgnoreSourcePackages ++= Seq(
   IgnoredPackage("org.flywaydb.core"),
-  IgnoredPackage("com.zaxxer.hikari")
+  IgnoredPackage("com.zaxxer.hikari.metrics")
 )
 //missinglinkExcludedDependencies += moduleFilter(organization = "ch.qos.logback", name = "logback-core")
 /*
