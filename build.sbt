@@ -1,24 +1,24 @@
-val http4sVersion     = "0.21.19" //"0.22.0-M3"
-val circeVersion      = "0.14.0-M3"
-val doobieVersion     = "0.11.0-M2"
-val zioVersion        = "1.0.4-2"
+val http4sVersion     = "0.21.20" //"0.22.0-M3"
+val circeVersion      = "0.13.0" // "0.14.0-M4"
+val doobieVersion     = "0.12.1"
+val zioVersion        = "1.0.5"
 val zioCatsVersion    = "2.3.1.0"
 val zioReactVersion   = "1.0.3.5"
-val zioIzumiVersion   = "1.0.0-M13"
+val zioIzumiVersion   = "1.0.0-M16"
 val fs2Version        = "2.5.3" //"3.0.0-M9"
-val silencerVersion   = "1.7.2"
-val acyclicVersion    = "0.2.0"
+val silencerVersion   = "1.7.3"
+val acyclicVersion    = "0.2.1"
 val calibanVersion    = "0.9.5"
-val sttpVersion       = "3.1.3"
-val pureconfigVersion = "0.14.0"
+val sttpVersion       = "3.2.0"
+val pureconfigVersion = "0.14.1"
 val catsVersion       = "2.4.2"
 val catsEffectVersion = "2.3.3" //"3.0.0-RC2"
-val quillVersion      = "3.6.1"
-val hikariCPVersion   = "4.0.2"
-val flywayVersion     = "7.5.3"
+val quillVersion      = "3.6.1" // doobie
+val hikariCPVersion   = "3.4.5" //"4.0.1" slf4j 2.0.0-alpha1
+val flywayVersion     = "7.7.1"
 val h2Version         = "1.4.200"
 val slf4jVersion      = "1.7.30"
-val sourcecodeVersion = "0.2.3"
+val sourcecodeVersion = "0.2.4"
 val kindProjectorVersion = "0.11.3"
 val splainVersion        = "0.5.8"
 val bmfVersion           = "0.3.1"
@@ -87,7 +87,7 @@ lazy val root = (project in file("."))
         s"https://github.com/mschuwalow/${name.value}/blob/v${version.value}/LICENSE"
       )
     ),
-    scalaVersion := "2.13.4",
+    scalaVersion := "2.13.5",
     testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework")),
     scalacOptions := Seq(
       "-feature",
@@ -173,6 +173,7 @@ lazy val root = (project in file("."))
       "org.slf4j"                    % "slf4j-log4j12"                % slf4jVersion,
       "com.lihaoyi"                  %% "sourcecode"                  % sourcecodeVersion,
       "com.lihaoyi"                  %% "acyclic"                     % acyclicVersion % "provided",
+      "org.scala-lang.modules"       %% "scala-collection-compat"     % "2.4.2",
       ("com.github.ghik" % "silencer-lib" % silencerVersion % "provided")
         .cross(CrossVersion.full),
       // plugins

@@ -18,6 +18,8 @@ import zio.interop.catz._
 import pureconfig.ConfigSource
 import pureconfig.error.ConfigReaderException
 
+import scala.io.StdIn
+
 object Main extends ManagedApp {
 
   override def run(args: List[String]): ZManaged[ZEnv, Nothing, ExitCode] =
@@ -26,15 +28,16 @@ object Main extends ManagedApp {
               .fromEither(ConfigSource.default.load[Config])
               .mapError(ConfigReaderException(_))
               .toManaged_
-      _ <- runHttp(cfg)
+      p <- runHttp(cfg)
             .provideLayer(
               ZEnv.live ++
                 Slf4jLogger.withSlf4jLogger("zio-todo-backend") ++
                 DoobieTodoRepository.withDoobieTodoRepository(cfg.dbConfig)
               //InMemoryTodoRepository.withInMemoryRepository
-            )
+            ).fork
             .toManaged_
-    } yield ())
+      exit <- (ZIO(StdIn.readLine()) *> p.interrupt).toManaged_
+    } yield exit)
       .foldM(
         err =>
           putStrLn(s"Execution failed with: ${err.getMessage}")

@@ -5,7 +5,7 @@ import cats.instances.long._
 import com.schuwalow.zio.todo.domain._
 import com.schuwalow.zio.todo.logger._
 import com.schuwalow.zio.todo.repository._
-import io.circe.{ Decoder, Encoder }
+import io.circe.{Decoder, Encoder}
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
