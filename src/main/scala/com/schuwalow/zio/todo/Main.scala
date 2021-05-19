@@ -34,13 +34,14 @@ object Main extends ManagedApp {
                 Slf4jLogger.withSlf4jLogger("zio-todo-backend") ++
                 DoobieTodoRepository.withDoobieTodoRepository(cfg.dbConfig)
               //InMemoryTodoRepository.withInMemoryRepository
-            ).fork
+            )
+            .fork
             .toManaged_
       exit <- (ZIO(StdIn.readLine()) *> p.interrupt).toManaged_
     } yield exit)
       .foldM(
         err =>
-          putStrLn(s"Execution failed with: ${err.getMessage}")
+          putStrLn(s"Execution failed with: ${err.getMessage}").either
             .as(ExitCode.failure)
             .toManaged_,
         _ => ZManaged.succeed(ExitCode.success)

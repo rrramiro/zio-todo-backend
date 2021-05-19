@@ -8,11 +8,11 @@ import zio.test.Assertion.equalTo
 import zio.interop.catz._
 import com.schuwalow.zio.todo.logger._
 import com.schuwalow.zio.todo.repository._
-import com.schuwalow.zio.todo.graphql.{Client => GraphQLClient}
+import com.schuwalow.zio.todo.graphql.{ Client => GraphQLClient }
 import sttp.client3._
 import sttp.client3.http4s.Http4sBackend
 import sttp.capabilities.fs2.Fs2Streams
-import org.http4s.client.{Client => Http4sClient}
+import org.http4s.client.{ Client => Http4sClient }
 import org.http4s.server.Router
 import org.http4s.syntax.kleisli._
 import TodoGraphQLSpecUtils._
@@ -23,11 +23,11 @@ object TodoGraphQLSpec extends DefaultRunnableSpec {
 
   def spec = suite("TodoGraphQL")(
     testM("GQL should list all todo items") {
-      withEnv { implicit backend =>
+      withEnv { backend =>
         assertM(
           GraphQLClient.Queries
             .allTodoItems(GraphQLClient.TodoItem.id)
-            .call
+            .call(backend)
         )(equalTo(List.empty[Long]))
       }
     }
@@ -68,11 +68,9 @@ object TodoGraphQLSpecUtils {
       )
 
   implicit class SelectionBuilderWrapper[Q: IsOperation, A](
-    builder: SelectionBuilder[Q, A]
-  )(implicit
-    backend: TodoSttpBackend) {
+    builder: SelectionBuilder[Q, A]) {
 
-    def call: TodoTask[A] =
+    def call(backend: TodoSttpBackend): TodoTask[A] =
       builder.toRequest(baseUrl).send(backend).map(_.body).absolve
   }
 

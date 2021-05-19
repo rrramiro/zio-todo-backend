@@ -1,27 +1,28 @@
-val http4sVersion     = "0.21.20" //"0.22.0-M3"
-val circeVersion      = "0.13.0" // "0.14.0-M4"
-val doobieVersion     = "0.12.1"
-val zioVersion        = "1.0.5"
-val zioCatsVersion    = "2.3.1.0"
-val zioReactVersion   = "1.0.3.5"
-val zioIzumiVersion   = "1.0.0-M16"
-val fs2Version        = "2.5.3" //"3.0.0-M9"
-val silencerVersion   = "1.7.3"
+val http4sVersion     = "0.21.23" // cats-effect fs2
+val circeVersion      = "0.14.0-M7" // cats-core
+val doobieVersion     = "0.13.3" // cats-effect quill
+val zioVersion        = "1.0.8"
+val zioReactVersion   = "1.3.5"
+val zioIzumiVersion   = "1.1.2"
+val fs2Version        = "2.5.6" //cats-effect
+val silencerVersion   = "1.7.4"
 val acyclicVersion    = "0.2.1"
-val calibanVersion    = "0.9.5"
-val sttpVersion       = "3.2.0"
-val pureconfigVersion = "0.14.1"
-val catsVersion       = "2.4.2"
-val catsEffectVersion = "2.3.3" //"3.0.0-RC2"
-val quillVersion      = "3.6.1" // doobie
+val calibanVersion    = "0.10.0" // cats-core http4s
+val sttpVersion       = "3.2.3" // cats-effect circe
+val pureconfigVersion = "0.15.0"
+val catsVersion       = "2.6.1"
+val catsEffectVersion = "2.5.1"
+val zioCatsVersion    = "2.4.1.0"
+val quillVersion      = "3.7.1" // doobie
 val hikariCPVersion   = "3.4.5" //"4.0.1" slf4j 2.0.0-alpha1
-val flywayVersion     = "7.7.1"
+val flywayVersion     = "7.9.0"
 val h2Version         = "1.4.200"
 val slf4jVersion      = "1.7.30"
-val sourcecodeVersion = "0.2.4"
-val kindProjectorVersion = "0.11.3"
+val sourcecodeVersion = "0.2.7"
+val kindProjectorVersion = "0.13.0"
 val splainVersion        = "0.5.8"
 val bmfVersion           = "0.3.1"
+val scalaCollCompatVersion = "2.4.4"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
@@ -76,9 +77,9 @@ addCommandAlias(
 lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging, DockerPlugin, CodegenPlugin)
   .settings(
-    packageName in Docker := "zio-todo",
-    dockerUsername in Docker := Some("mnt"),
-    dockerExposedPorts in Docker := Seq(8080),
+    Docker / packageName := "zio-todo",
+    Docker / dockerUsername := Some("todouser"),
+    Docker / dockerExposedPorts := Seq(8080),
     organization := "com.schuwalow",
     name := "zio-todo-backend",
     maintainer := "maxim.schuwalow@gmail.com",
@@ -121,12 +122,12 @@ lazy val root = (project in file("."))
     dependencyCheckCveUrlBase := Some("http://nvdmirror.sml.io/"),
     dependencyCheckAssemblyAnalyzerEnabled := Some(false),
     dependencyCheckFormat := "All",
-    wartremoverWarnings in (Compile, compile) := Warts.all
+    Compile / compile / wartremoverWarnings := Warts.all
       .diff(wartremoverCompileExclusions),
-    wartremoverWarnings in (Test, compile) := Warts.all
+    Test / compile / wartremoverWarnings := Warts.all
       .diff(wartremoverTestCompileExclusions),
-    scalacOptions in (Compile, console) ~= filterConsoleScalacOptions,
-    scalacOptions in (Test, console) ~= filterConsoleScalacOptions,
+    Compile / console / scalacOptions ~= filterConsoleScalacOptions,
+    Test / console / scalacOptions ~= filterConsoleScalacOptions,
     libraryDependencies ++= Seq(
       "org.http4s"                   %% "http4s-blaze-server"         % http4sVersion,
       "org.http4s"                   %% "http4s-dsl"                  % http4sVersion,
@@ -135,7 +136,7 @@ lazy val root = (project in file("."))
       "org.http4s"                   %% "http4s-server"               % http4sVersion,
       "io.circe"                     %% "circe-core"                  % circeVersion,
       "io.circe"                     %% "circe-generic"               % circeVersion,
-     // "io.circe"                     %% "circe-optics"                % circeVersion,
+      //"io.circe"                     %% "circe-optics"                % circeVersion,
       "io.circe"                     %% "circe-literal"               % circeVersion % Test,
       "com.github.ghostdogpr"        %% "caliban"                     % calibanVersion,
       "com.github.ghostdogpr"        %% "caliban-http4s"              % calibanVersion,
@@ -146,7 +147,7 @@ lazy val root = (project in file("."))
       "org.tpolecat"                 %% "doobie-h2"                   % doobieVersion,
       "org.tpolecat"                 %% "doobie-hikari"               % doobieVersion,
       "org.tpolecat"                 %% "doobie-quill"                % doobieVersion,
-      "com.softwaremill.sttp.client3" %% "core"                       % sttpVersion,
+      "com.softwaremill.sttp.client3" %% "core"                       % sttpVersion % Test,
       "com.softwaremill.sttp.client3" %% "http4s-backend"             % sttpVersion % Test,
       "dev.zio"                      %% "zio"                         % zioVersion,
       "dev.zio"                      %% "zio-streams"                 % zioVersion,
@@ -173,7 +174,7 @@ lazy val root = (project in file("."))
       "org.slf4j"                    % "slf4j-log4j12"                % slf4jVersion,
       "com.lihaoyi"                  %% "sourcecode"                  % sourcecodeVersion,
       "com.lihaoyi"                  %% "acyclic"                     % acyclicVersion % "provided",
-      "org.scala-lang.modules"       %% "scala-collection-compat"     % "2.4.2",
+      "org.scala-lang.modules"       %% "scala-collection-compat"     % scalaCollCompatVersion,
       ("com.github.ghik" % "silencer-lib" % silencerVersion % "provided")
         .cross(CrossVersion.full),
       // plugins

@@ -4,7 +4,7 @@ import com.schuwalow.zio.todo.domain._
 import com.schuwalow.zio.todo.config._
 import cats.effect.Blocker
 import cats.implicits._
-import io.getquill.{idiom => _, _}
+import io.getquill.{ idiom => _, _ }
 import doobie._
 import doobie.implicits._
 import doobie.free.connection
@@ -52,13 +52,16 @@ object DoobieTodoRepository {
     }
 
     @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
-    def create(todoItem: TodoItem): ConnectionIO[TodoId] = run(quote{
-      todosTable.insert(
-        _.item.title -> lift(todoItem.item.title),
-        _.item.completed -> lift(todoItem.item.completed),
-        _.item.order -> lift(todoItem.item.order)
-      ).returningGenerated(_.id)
-    })
+    def create(todoItem: TodoItem): ConnectionIO[TodoId] =
+      run(quote {
+        todosTable
+          .insert(
+            _.item.title     -> lift(todoItem.item.title),
+            _.item.completed -> lift(todoItem.item.completed),
+            _.item.order     -> lift(todoItem.item.order)
+          )
+          .returningGenerated(_.id)
+      })
 
     def get(id: TodoId): ConnectionIO[Option[TodoItem]] =
       run(quote {
