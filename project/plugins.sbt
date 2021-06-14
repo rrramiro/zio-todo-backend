@@ -8,7 +8,7 @@ addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.13")
 
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.7")
 
-addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.13")
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.15")
 
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.2")
 
@@ -27,4 +27,6 @@ addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "2.0.0") //"3.1.1"
 
 addSbtPlugin("com.github.ghostdogpr" % "caliban-codegen" % "0.7.5")
 
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")
+//addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")
+
+addDependencyTreePlugin

@@ -46,7 +46,7 @@ object Client {
       Field(
         "todoItem",
         OptionOf(Obj(innerSelection)),
-        arguments = List(Argument("id", id))
+        arguments = List(Argument("id", id, "Long"))
       )
   }
 
@@ -63,11 +63,18 @@ object Client {
       Field(
         "createTodoItem",
         Obj(innerSelection),
-        arguments = List(Argument("title", title), Argument("order", order))
+        arguments = List(
+          Argument("title", title, "String"),
+          Argument("order", order, "Option[Int]")
+        )
       )
 
     def deleteTodoItem(id: Long): SelectionBuilder[RootMutation, Unit] =
-      Field("deleteTodoItem", Scalar(), arguments = List(Argument("id", id)))
+      Field(
+        "deleteTodoItem",
+        Scalar(),
+        arguments = List(Argument("id", id, "Long"))
+      )
 
     def deleteAllTodoItems: SelectionBuilder[RootMutation, Unit] =
       Field("deleteAllTodoItems", Scalar())
@@ -84,10 +91,10 @@ object Client {
         "updateTodoItem",
         OptionOf(Obj(innerSelection)),
         arguments = List(
-          Argument("id", id),
-          Argument("title", title),
-          Argument("completed", completed),
-          Argument("order", order)
+          Argument("id", id, "Long"),
+          Argument("title", title, "String"),
+          Argument("completed", completed, "Option[Boolean]"),
+          Argument("order", order, "Option[Int]")
         )
       )
   }
