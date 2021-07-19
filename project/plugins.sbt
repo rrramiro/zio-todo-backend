@@ -8,9 +8,9 @@ addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.13")
 
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.7")
 
-addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.15")
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.16")
 
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.2")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.3")
 
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
 

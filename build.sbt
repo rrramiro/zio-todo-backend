@@ -7,7 +7,7 @@ val zioIzumiVersion   = "1.1.2"
 val fs2Version        = "2.5.6" //cats-effect
 val silencerVersion   = "1.7.5"
 val acyclicVersion    = "0.2.1"
-val calibanVersion    = "1.0.0" // cats-core http4s
+val calibanVersion    = "1.1.0" // cats-core http4s
 val sttpVersion       = "3.2.3" // cats-effect circe
 val pureconfigVersion = "0.16.0"
 val catsVersion       = "2.6.1"
@@ -15,14 +15,14 @@ val catsEffectVersion = "2.5.1"
 val zioCatsVersion    = "2.4.1.0"
 val quillVersion      = "3.7.1" // doobie
 val hikariCPVersion   = "3.4.5" //"4.0.1" slf4j 2.0.0-alpha1
-val flywayVersion     = "7.10.0"
+val flywayVersion     = "7.11.2"
 val h2Version         = "1.4.200"
-val slf4jVersion      = "1.7.30"
+val slf4jVersion      = "1.7.31"
 val sourcecodeVersion = "0.2.7"
 val kindProjectorVersion = "0.13.0"
 val splainVersion        = "0.5.8"
 val bmfVersion           = "0.3.1"
-val scalaCollCompatVersion = "2.4.4"
+val scalaCollCompatVersion = "2.5.0"
 
 val wartremoverCompileExclusions = Seq(
   Wart.Overloading,
